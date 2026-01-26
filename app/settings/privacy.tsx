@@ -48,7 +48,7 @@ export default function PrivacyScreen() {
           onPress: () => {
             Alert.alert(
               'Account Deletion',
-              'Please contact support@lmnl.app to delete your account.'
+              'Please contact support@lmnlapp.com to delete your account.'
             );
           },
         },

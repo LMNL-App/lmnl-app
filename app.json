@@ -15,7 +15,11 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.lmnl.app"
+      "bundleIdentifier": "com.lmnlapp",
+      "associatedDomains": [
+        "applinks:lmnlapp.com",
+        "applinks:www.lmnlapp.com"
+      ]
     },
     "android": {
       "adaptiveIcon": {
@@ -23,7 +27,27 @@
         "backgroundColor": "#000000"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.lmnl.app"
+      "package": "com.lmnlapp",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ],
+          "data": [
+            {
+              "scheme": "https",
+              "host": "lmnlapp.com"
+            },
+            {
+              "scheme": "https",
+              "host": "www.lmnlapp.com"
+            }
+          ]
+        }
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png",

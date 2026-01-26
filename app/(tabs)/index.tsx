@@ -43,14 +43,25 @@ export default function FeedScreen() {
 
   const renderItem = useCallback(
     ({ item, index }: { item: FeedPost; index: number }) => {
+      const shouldShowSinglePostAd = posts.length === 1 && index === 0;
+      const shouldShowStandardAd = posts.length > 1 && index === 3;
       // Insert sponsored content after 3rd post
-      if (index === 3) {
+      if (shouldShowSinglePostAd || shouldShowStandardAd) {
         // Prefer internal sponsored post, fallback to AdMob
         const adComponent = sponsoredPost ? (
           <SponsoredPost post={sponsoredPost} />
         ) : (
           <AdMobBanner />
         );
+
+        if (shouldShowSinglePostAd) {
+          return (
+            <>
+              <PostCard post={item} />
+              {adComponent}
+            </>
+          );
+        }
 
         return (
           <>
@@ -59,9 +70,10 @@ export default function FeedScreen() {
           </>
         );
       }
+
       return <PostCard post={item} />;
     },
-    [sponsoredPost]
+    [posts.length, sponsoredPost]
   );
 
   const renderHeader = () => (

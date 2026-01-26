@@ -3,6 +3,7 @@
  */
 import { View, Text, StyleSheet, ScrollView, Linking, TouchableOpacity } from 'react-native';
 import { useThemeStore } from '../../src/stores/themeStore';
+import { APP_CONFIG } from '../../src/constants/config';
 import { Typography, Spacing, BorderRadius } from '../../src/constants/theme';
 import { DAILY_LIMITS } from '../../src/constants/limits';
 
@@ -119,9 +120,9 @@ export default function AboutScreen() {
         <Text style={[styles.version, { color: colors.textTertiary }]}>
           Version 1.0.0
         </Text>
-        <TouchableOpacity onPress={() => Linking.openURL('https://lmnl.app')}>
+        <TouchableOpacity onPress={() => Linking.openURL(APP_CONFIG.webBaseUrl)}>
           <Text style={[styles.link, { color: colors.primary }]}>
-            lmnl.app
+            {APP_CONFIG.webBaseUrl.replace('https://', '')}
           </Text>
         </TouchableOpacity>
       </View>

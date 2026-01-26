@@ -23,6 +23,7 @@ import { useThemeStore } from '../../src/stores/themeStore';
 import { useAuthStore } from '../../src/stores/authStore';
 import { supabase } from '../../src/lib/supabase';
 import { Avatar, Button } from '../../src/components/ui';
+import { APP_CONFIG } from '../../src/constants/config';
 import { Typography, Spacing, BorderRadius } from '../../src/constants/theme';
 import type { Post, UserStats } from '../../src/types/database';
 
@@ -91,7 +92,7 @@ export default function ProfileScreen() {
 
     try {
       await Share.share({
-        message: `Check out @${profile.username} on LMNL - Quality over Quantity\nhttps://lmnl.app/u/${profile.username}`,
+        message: `Check out @${profile.username} on LMNL - Quality over Quantity\n${APP_CONFIG.webBaseUrl}/u/${profile.username}`,
         title: `${profile.full_name} on LMNL`,
       });
     } catch (error) {

@@ -12,6 +12,9 @@ export const APP_CONFIG = {
   /** App version */
   version: '1.0.0',
 
+  /** Public website base URL */
+  webBaseUrl: 'https://lmnlapp.com',
+
   /** Maximum image upload size in bytes (5MB) */
   maxImageSize: 5 * 1024 * 1024,
 

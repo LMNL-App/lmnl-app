@@ -1,4 +1,4 @@
-# LMNL.app - Setup & Run Guide
+# LMNLapp.com - Setup & Run Guide
 
 This guide will help you set up and run the LMNL app locally for development.
 
@@ -114,6 +114,61 @@ EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
 3. Optionally configure:
    - **Confirm email:** Enable/disable email verification
    - **Secure email change:** Recommended to enable
+
+---
+
+## Custom Domain Integration (lmnlapp.com)
+
+If you are hosting the web build and want the app’s links to resolve to `lmnlapp.com`, complete the steps below.
+
+### Step 1: Point DNS to Your Web Host
+
+1. Build and deploy the web app to your hosting provider (e.g., Vercel, Netlify, Cloudflare Pages).
+2. In your DNS provider:
+   - Create a **CNAME** for `www` pointing to your host’s domain.
+   - Create an **A/ALIAS** record for the root (`@`) pointing to your host’s IP/alias target.
+3. Wait for DNS propagation and verify `https://lmnlapp.com` resolves.
+
+### Step 2: Enable HTTPS
+
+Most hosts provision SSL automatically. Confirm the certificate is active for both:
+- `lmnlapp.com`
+- `www.lmnlapp.com`
+
+### Step 3: Update Supabase Auth URLs
+
+In Supabase **Authentication** → **URL Configuration**:
+- **Site URL:** `https://lmnlapp.com`
+- **Redirect URLs:** add `https://lmnlapp.com/**` and `https://www.lmnlapp.com/**`
+
+This ensures email magic links and OAuth redirects return to your domain.
+
+### Step 4: Update In-App Links
+
+Links used in sharing and settings should use the new domain. The current references live in:
+- `app/profile/[id].tsx`
+- `app/(tabs)/profile.tsx`
+- `app/settings/about.tsx`
+- `app/settings/privacy.tsx`
+
+Consider centralizing the base URL in a config constant to avoid hardcoding it in multiple places.
+
+### Step 5: Configure Universal Links (iOS) and App Links (Android)
+
+To have `https://lmnlapp.com` open the mobile app:
+
+1. Ensure these config entries exist in `app.json`:
+   - iOS: `associatedDomains` includes `applinks:lmnlapp.com` and `applinks:www.lmnlapp.com`
+   - Android: `intentFilters` include the `https` host for `lmnlapp.com` and `www.lmnlapp.com`
+2. Host the required association files on your domain:
+   - iOS: `https://lmnlapp.com/.well-known/apple-app-site-association`
+   - Android: `https://lmnlapp.com/.well-known/assetlinks.json`
+3. Make sure the association files reference your app IDs:
+   - iOS: `appID` = `<APPLE_TEAM_ID>.com.lmnl.app`
+   - Android: `package_name` = `com.lmnl.app` and the signing certificate fingerprint
+4. Rebuild the app (EAS or local build) so the OS can verify the links.
+
+Once configured, opening a share link like `https://lmnlapp.com/u/<username>` will launch the app and route to the profile screen.
 
 ---
 
@@ -379,3 +434,5 @@ eas build --platform android
 ## Support
 
 For questions or issues, please [create an issue](link-to-issues) or contact the development team.
+
+npx expo run:android --variant release
