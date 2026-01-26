@@ -117,7 +117,7 @@ export function Button({
         {
           backgroundColor: getBackgroundColor(),
           borderColor: getBorderColor(),
-          borderWidth: variant === 'outline' ? 1 : 0,
+          borderWidth: variant === 'outline' ? 2 : 0, // Thicker border for outline
         },
         fullWidth && styles.fullWidth,
         style,
@@ -136,7 +136,7 @@ export function Button({
             textStyle,
           ]}
         >
-          {title}
+          {title.toUpperCase()}
         </Text>
       )}
     </TouchableOpacity>
@@ -145,7 +145,7 @@ export function Button({
 
 const styles = StyleSheet.create({
   button: {
-    borderRadius: BorderRadius.lg,
+    borderRadius: BorderRadius.sm, // Minimal radius
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
@@ -154,6 +154,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   text: {
-    fontWeight: Typography.weights.semibold,
+    fontWeight: Typography.weights.bold, // Strong typography
+    letterSpacing: 1, // Swiss style often uses letter spacing for uppercase
   },
 });

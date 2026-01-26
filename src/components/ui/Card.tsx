@@ -54,7 +54,7 @@ export function Card({
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: BorderRadius.lg,
+    borderRadius: BorderRadius.sm, // Geometric
     borderWidth: 1,
   },
 });

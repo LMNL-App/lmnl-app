@@ -134,82 +134,83 @@ export const Colors = {
 export type ThemeColors = typeof Colors.light;
 export type ColorScheme = 'light' | 'dark';
 
-// Typography
+// Typography - Swiss Style (Modular Scale 1.125 - Major Second or similar)
+// Focusing on cleanliness and readability
 export const Typography = {
   // Font sizes
   sizes: {
-    xs: 10,
-    sm: 12,
-    md: 14,
-    base: 16,
-    lg: 18,
-    xl: 20,
-    '2xl': 24,
-    '3xl': 30,
-    '4xl': 36,
+    xs: 11,   // Captions
+    sm: 13,   // Secondary text
+    md: 15,   // Body text (slightly lowered for density)
+    base: 16, // Standard
+    lg: 20,   // Subtitles
+    xl: 24,   // Titles
+    '2xl': 32, // Headlines
+    '3xl': 48, // Display
+    '4xl': 64, // Hero
   },
 
-  // Font weights
+  // Font weights - Swiss design often uses distinct weights like Regular and Bold, less in-between
   weights: {
     normal: '400' as const,
     medium: '500' as const,
-    semibold: '600' as const,
+    semibold: '600' as const, // Use for emphasis instead of bold sometimes
     bold: '700' as const,
   },
 
-  // Line heights
+  // Line heights - Tighter for headlines, breathable for body
   lineHeights: {
-    tight: 1.25,
+    tight: 1.1,
     normal: 1.5,
-    relaxed: 1.75,
+    relaxed: 1.6,
   },
 } as const;
 
-// Spacing
+// Spacing - Strict grid system (Base 4px)
 export const Spacing = {
   xs: 4,
   sm: 8,
-  md: 12,
-  base: 16,
-  lg: 20,
-  xl: 24,
-  '2xl': 32,
-  '3xl': 40,
-  '4xl': 48,
+  md: 16,  // Increased from 12 for more whitespace
+  base: 24, // Increased standard separation
+  lg: 32,
+  xl: 48,
+  '2xl': 64,
+  '3xl': 96,
+  '4xl': 128,
 } as const;
 
-// Border radius
+// Border radius - Minimal or None (Swiss Style favors geometric shapes)
 export const BorderRadius = {
   none: 0,
-  sm: 4,
-  md: 8,
-  lg: 12,
-  xl: 16,
-  '2xl': 20,
+  sm: 2,   // Very subtle
+  md: 4,   // Minimal
+  lg: 6,   // Slightly softened
+  xl: 8,
+  '2xl': 12,
   full: 9999,
 } as const;
 
-// Shadows (for light mode)
+// Shadows - Flat design, minimal depth
 export const Shadows = {
   sm: {
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
+    shadowColor: 'transparent', // Flattened
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    elevation: 0,
   },
   md: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.05, // Very subtle
     shadowRadius: 4,
     elevation: 2,
   },
   lg: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
     elevation: 4,
   },
 } as const;
