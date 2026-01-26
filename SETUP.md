@@ -436,3 +436,7 @@ eas build --platform android
 For questions or issues, please [create an issue](link-to-issues) or contact the development team.
 
 npx expo run:android --variant release
+
+px expo prebuild -p ios
+cd ios
+pod install
