@@ -38,10 +38,10 @@ export function SponsoredPost({ post }: SponsoredPostProps) {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.sponsoredBackground }]}>
+    <View style={[styles.container, { backgroundColor: colors.sponsoredBackground, borderColor: colors.border }]}>
       {/* Sponsored Label */}
       <View style={styles.labelContainer}>
-        <Text style={[styles.label, { color: colors.sponsored }]}>Sponsored</Text>
+        <Text style={[styles.label, { color: colors.sponsored }]}>sponsored</Text>
       </View>
 
       {/* Content */}
@@ -70,11 +70,11 @@ export function SponsoredPost({ post }: SponsoredPostProps) {
         </View>
 
         <TouchableOpacity
-          style={[styles.ctaButton, { backgroundColor: colors.primary }]}
+          style={[styles.ctaButton, { backgroundColor: colors.text }]}
           onPress={handlePress}
         >
-          <Text style={styles.ctaText}>{post.cta_text}</Text>
-          <Ionicons name="arrow-forward" size={16} color="#FFFFFF" />
+          <Text style={[styles.ctaText, { color: colors.textInverse }]}>{post.cta_text}</Text>
+          <Ionicons name="arrow-forward" size={16} color={colors.textInverse} />
         </TouchableOpacity>
       </View>
     </View>
@@ -87,6 +87,7 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.base,
     borderRadius: BorderRadius.lg,
     overflow: 'hidden',
+    borderWidth: 1,
   },
   labelContainer: {
     padding: Spacing.sm,
@@ -94,9 +95,9 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: Typography.sizes.xs,
-    fontWeight: Typography.weights.semibold,
+    fontWeight: Typography.weights.medium,
     textTransform: 'uppercase',
-    letterSpacing: 1,
+    letterSpacing: 1.5,
   },
   content: {
     paddingHorizontal: Spacing.md,
@@ -114,7 +115,7 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: 180,
-    backgroundColor: '#E0E0E0',
+    backgroundColor: '#E5E2DD',
   },
   footer: {
     flexDirection: 'row',
@@ -136,7 +137,6 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.md,
   },
   ctaText: {
-    color: '#FFFFFF',
     fontSize: Typography.sizes.sm,
     fontWeight: Typography.weights.semibold,
     marginRight: Spacing.xs,

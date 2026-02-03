@@ -52,7 +52,7 @@ export function AdMobBanner({ onAdLoaded, onAdFailed }: AdMobBannerProps) {
     <View style={[styles.container, { backgroundColor: colors.sponsoredBackground }]}>
       {/* Sponsored Label */}
       <View style={styles.labelContainer}>
-        <Text style={[styles.label, { color: colors.sponsored }]}>Sponsored</Text>
+        <Text style={[styles.label, { color: colors.sponsored }]}>sponsored</Text>
       </View>
 
       {/* AdMob Banner */}
@@ -100,9 +100,9 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: Typography.sizes.xs,
-    fontWeight: Typography.weights.semibold,
+    fontWeight: Typography.weights.medium,
     textTransform: 'uppercase',
-    letterSpacing: 1,
+    letterSpacing: 1.5,
   },
   adContainer: {
     alignItems: 'center',

@@ -57,8 +57,8 @@ export default function TabsLayout() {
         options={{
           title: 'Create',
           tabBarIcon: ({ color }) => (
-            <View style={[styles.createButton, { backgroundColor: colors.primary }]}>
-              <Ionicons name="add" size={28} color="#FFFFFF" />
+            <View style={[styles.createButton, { backgroundColor: colors.tabBarActive }]}>
+              <Ionicons name="add" size={24} color={colors.tabBar} />
             </View>
           ),
         }}
@@ -95,11 +95,11 @@ export default function TabsLayout() {
 
 const styles = StyleSheet.create({
   createButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: -16,
+    marginTop: -12,
   },
 });

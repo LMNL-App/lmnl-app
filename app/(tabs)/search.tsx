@@ -232,7 +232,7 @@ export default function SearchScreen() {
     >
       {/* Search Input */}
       <View style={styles.searchContainer}>
-        <View style={[styles.searchInput, { backgroundColor: colors.input }]}>
+        <View style={[styles.searchInput, { backgroundColor: colors.input, borderColor: colors.border }]}>
           <Ionicons name="search" size={20} color={colors.textTertiary} />
           <TextInput
             value={query}
@@ -280,7 +280,7 @@ export default function SearchScreen() {
                       Recent
                     </Text>
                     <TouchableOpacity onPress={() => setRecentSearches([])}>
-                      <Text style={[styles.seeAll, { color: colors.primary }]}>
+                      <Text style={[styles.seeAll, { color: colors.textSecondary }]}>
                         See all
                       </Text>
                     </TouchableOpacity>
@@ -328,6 +328,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     borderRadius: BorderRadius.lg,
+    borderWidth: 1,
   },
   input: {
     flex: 1,

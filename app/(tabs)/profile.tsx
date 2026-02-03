@@ -191,7 +191,7 @@ export default function ProfileScreen() {
       >
         {/* Header */}
         <View style={styles.header}>
-          <Text style={[styles.username, { color: colors.text }]}>
+          <Text style={[styles.username, { color: colors.textTertiary }]}>
             @{profile.username}
           </Text>
           <View style={styles.headerActions}>
@@ -224,7 +224,7 @@ export default function ProfileScreen() {
 
           {profile.website && (
             <TouchableOpacity>
-              <Text style={[styles.website, { color: colors.primary }]}>
+              <Text style={[styles.website, { color: colors.textSecondary }]}>
                 {profile.website}
               </Text>
             </TouchableOpacity>
@@ -320,8 +320,8 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
   },
   username: {
-    fontSize: Typography.sizes.xl,
-    fontWeight: Typography.weights.bold,
+    fontSize: Typography.sizes.base,
+    fontWeight: Typography.weights.medium,
   },
   headerActions: {
     flexDirection: 'row',
@@ -400,7 +400,7 @@ const styles = StyleSheet.create({
   postImage: {
     width: '100%',
     height: '100%',
-    backgroundColor: '#E0E0E0',
+    backgroundColor: '#E5E2DD',
   },
   textPost: {
     width: '100%',

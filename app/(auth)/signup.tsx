@@ -81,13 +81,8 @@ export default function SignUpScreen() {
         >
           {/* Logo */}
           <View style={styles.logoContainer}>
-            <View style={[styles.logoCircles]}>
-              <View style={[styles.circle, styles.circle1]} />
-              <View style={[styles.circle, styles.circle2]} />
-              <View style={[styles.circle, styles.circle3]} />
-              <View style={[styles.circle, styles.circle4]} />
-            </View>
-            <Text style={[styles.logoText, { color: colors.text }]}>LMNL</Text>
+            <Text style={[styles.logoText, { color: colors.text }]}>lmnl</Text>
+            <Text style={[styles.logoTagline, { color: colors.textTertiary }]}>quality over quantity</Text>
           </View>
 
           {/* Form */}
@@ -158,7 +153,7 @@ export default function SignUpScreen() {
             </Text>
             <Link href="/(auth)/login" asChild>
               <TouchableOpacity>
-                <Text style={[styles.loginLink, { color: colors.primary }]}>
+                <Text style={[styles.loginLink, { color: colors.text }]}>
                   Log in
                 </Text>
               </TouchableOpacity>
@@ -186,42 +181,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: Spacing['2xl'],
   },
-  logoCircles: {
-    width: 80,
-    height: 80,
-    position: 'relative',
-    marginBottom: Spacing.base,
-  },
-  circle: {
-    position: 'absolute',
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-  },
-  circle1: {
-    backgroundColor: '#FF6B6B',
-    top: 0,
-    left: 0,
-  },
-  circle2: {
-    backgroundColor: '#4ECDC4',
-    top: 0,
-    right: 0,
-  },
-  circle3: {
-    backgroundColor: '#45B7D1',
-    bottom: 0,
-    left: 0,
-  },
-  circle4: {
-    backgroundColor: '#96CEB4',
-    bottom: 0,
-    right: 0,
-  },
   logoText: {
-    fontSize: Typography.sizes['3xl'],
+    fontSize: Typography.sizes['4xl'],
     fontWeight: Typography.weights.bold,
-    letterSpacing: 4,
+    letterSpacing: 6,
+  },
+  logoTagline: {
+    fontSize: Typography.sizes.xs,
+    letterSpacing: 2,
+    marginTop: Spacing.xs,
+    textTransform: 'uppercase',
   },
   form: {
     marginBottom: Spacing.lg,

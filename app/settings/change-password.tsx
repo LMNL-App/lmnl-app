@@ -100,7 +100,7 @@ export default function ChangePasswordScreen() {
     >
       {/* Info Box */}
       <View style={[styles.infoBox, { backgroundColor: colors.backgroundSecondary }]}>
-        <Ionicons name="information-circle-outline" size={20} color={colors.primary} />
+        <Ionicons name="information-circle-outline" size={20} color={colors.textTertiary} />
         <Text style={[styles.infoText, { color: colors.textSecondary }]}>
           Your password must be at least 8 characters long.
         </Text>

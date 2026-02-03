@@ -28,8 +28,8 @@ function SettingRow({ label, description, value, onValueChange }: SettingRowProp
       <Switch
         value={value}
         onValueChange={onValueChange}
-        trackColor={{ false: colors.border, true: colors.primary }}
-        thumbColor="#FFFFFF"
+        trackColor={{ false: colors.border, true: colors.text }}
+        thumbColor="#FDFCFB"
       />
     </View>
   );

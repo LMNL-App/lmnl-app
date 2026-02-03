@@ -97,8 +97,8 @@ export default function RootLayout() {
 
   if (!isReady) {
     return (
-      <View style={[styles.loading, { backgroundColor: '#000000' }]}>
-        <ActivityIndicator size="large" color="#007AFF" />
+      <View style={[styles.loading, { backgroundColor: '#F7F5F2' }]}>
+        <ActivityIndicator size="large" color="#1A1A1A" />
       </View>
     );
   }

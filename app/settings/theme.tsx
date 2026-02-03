@@ -24,7 +24,7 @@ function ThemeOption({ value, label, icon, description, isSelected, onSelect }: 
     <TouchableOpacity
       style={[
         styles.option,
-        { backgroundColor: colors.surface, borderColor: isSelected ? colors.primary : colors.border },
+        { backgroundColor: colors.surface, borderColor: isSelected ? colors.text : colors.border },
       ]}
       onPress={onSelect}
     >
@@ -40,11 +40,11 @@ function ThemeOption({ value, label, icon, description, isSelected, onSelect }: 
       <View
         style={[
           styles.radio,
-          { borderColor: isSelected ? colors.primary : colors.border },
-          isSelected && { backgroundColor: colors.primary },
+          { borderColor: isSelected ? colors.text : colors.border },
+          isSelected && { backgroundColor: colors.text },
         ]}
       >
-        {isSelected && <View style={styles.radioInner} />}
+        {isSelected && <View style={[styles.radioInner, { backgroundColor: colors.surface }]} />}
       </View>
     </TouchableOpacity>
   );
@@ -156,7 +156,6 @@ const styles = StyleSheet.create({
     width: 12,
     height: 12,
     borderRadius: 6,
-    backgroundColor: '#FFFFFF',
   },
   note: {
     fontSize: Typography.sizes.sm,

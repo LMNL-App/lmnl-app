@@ -31,7 +31,7 @@ function SettingItem({ icon, label, onPress, showArrow = true, danger = false }:
 
   return (
     <TouchableOpacity
-      style={styles.settingItem}
+      style={[styles.settingItem, { borderBottomColor: colors.border }]}
       onPress={onPress}
     >
       <View style={styles.settingLeft}>
@@ -111,7 +111,7 @@ export default function SettingsScreen() {
             <Text style={[styles.profileUsername, { color: colors.textSecondary }]}>
               @{profile?.username}
             </Text>
-            <Text style={[styles.editProfile, { color: colors.primary }]}>
+            <Text style={[styles.editProfile, { color: colors.textSecondary }]}>
               Edit profile
             </Text>
           </View>
@@ -312,8 +312,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: Spacing.base,
-    borderBottomWidth: 0.5,
-    borderBottomColor: 'rgba(0,0,0,0.1)',
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   settingLeft: {
     flexDirection: 'row',

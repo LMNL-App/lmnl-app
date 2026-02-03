@@ -126,7 +126,7 @@ export default function EditProfileScreen() {
           name={fullName}
           size="xlarge"
         />
-        <Text style={[styles.changePhoto, { color: colors.primary }]}>
+        <Text style={[styles.changePhoto, { color: colors.textSecondary }]}>
           Change photo
         </Text>
       </TouchableOpacity>

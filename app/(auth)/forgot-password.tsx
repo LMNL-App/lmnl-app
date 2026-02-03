@@ -9,62 +9,149 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  ScrollView,
+  TouchableOpacity,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useThemeStore } from '../../src/stores/themeStore';
 import { Button, Input } from '../../src/components/ui';
-import { resetPassword } from '../../src/lib/auth';
-import { validateEmail } from '../../src/utils/validation';
-import { Typography, Spacing } from '../../src/constants/theme';
+import {
+  sendPasswordResetCode,
+  verifyPasswordResetCode,
+  updatePassword,
+  signOut,
+} from '../../src/lib/auth';
+import {
+  validateEmail,
+  validatePassword,
+  validatePasswordConfirm,
+} from '../../src/utils/validation';
+import { Typography, Spacing, BorderRadius } from '../../src/constants/theme';
+
+type ResetStep = 'request' | 'verify' | 'success';
 
 export default function ForgotPasswordScreen() {
   const router = useRouter();
   const { colors } = useThemeStore();
+  const [step, setStep] = useState<ResetStep>('request');
   const [email, setEmail] = useState('');
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSent, setIsSent] = useState(false);
+  const [code, setCode] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSending, setIsSending] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
 
-  const handleReset = async () => {
-    const validationError = validateEmail(email);
-    if (validationError) {
-      setError(validationError);
+  const handleSendCode = async () => {
+    const emailError = validateEmail(email);
+    if (emailError) {
+      setErrors({ email: emailError });
       return;
     }
 
-    setError('');
-    setIsLoading(true);
+    setErrors({});
+    setIsSending(true);
 
     try {
-      await resetPassword(email);
-      setIsSent(true);
+      await sendPasswordResetCode(email);
+      setStep('verify');
     } catch (error: any) {
       Alert.alert(
         'Error',
         error.message || 'Something went wrong. Please try again.'
       );
     } finally {
-      setIsLoading(false);
+      setIsSending(false);
     }
   };
 
-  if (isSent) {
+  const handleResendCode = async () => {
+    if (!email) return;
+    setIsSending(true);
+    try {
+      await sendPasswordResetCode(email);
+      Alert.alert('Code Sent', 'A new code has been sent to your email.');
+    } catch (error: any) {
+      Alert.alert(
+        'Error',
+        error.message || 'Unable to resend the code. Please try again.'
+      );
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  const handleVerifyAndReset = async () => {
+    const nextErrors: Record<string, string> = {};
+
+    if (!code) {
+      nextErrors.code = 'Code is required';
+    } else if (code.length < 6) {
+      nextErrors.code = 'Enter the 6-digit code';
+    }
+
+    const passwordError = validatePassword(password);
+    if (passwordError) nextErrors.password = passwordError;
+
+    const confirmError = validatePasswordConfirm(password, confirmPassword);
+    if (confirmError) nextErrors.confirmPassword = confirmError;
+
+    if (Object.keys(nextErrors).length > 0) {
+      setErrors(nextErrors);
+      return;
+    }
+
+    setErrors({});
+    setIsVerifying(true);
+
+    try {
+      await verifyPasswordResetCode(email, code);
+      await updatePassword(password);
+      try {
+        await signOut();
+      } catch {
+        // Ignore sign out errors after a successful reset
+      }
+      setStep('success');
+    } catch (error: any) {
+      Alert.alert(
+        'Error',
+        error.message || 'Unable to reset your password. Please try again.'
+      );
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
+  const handleCodeChange = (value: string) => {
+    const sanitized = value.replace(/[^0-9]/g, '').slice(0, 6);
+    setCode(sanitized);
+  };
+
+  const handleChangeEmail = () => {
+    setStep('request');
+    setErrors({});
+    setCode('');
+    setPassword('');
+    setConfirmPassword('');
+  };
+
+  if (step === 'success') {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={styles.content}>
-          <View style={[styles.iconContainer, { backgroundColor: colors.success + '20' }]}>
-            <Ionicons name="mail-outline" size={48} color={colors.success} />
+          <View style={[styles.iconContainer, { backgroundColor: colors.backgroundSecondary }]}>
+            <Ionicons name="checkmark-circle-outline" size={48} color={colors.success} />
           </View>
 
           <Text style={[styles.title, { color: colors.text }]}>
-            Check your email
+            Password updated
           </Text>
 
           <Text style={[styles.description, { color: colors.textSecondary }]}>
-            We've sent password reset instructions to{'\n'}
-            <Text style={{ fontWeight: Typography.weights.semibold }}>{email}</Text>
+            Your password has been reset successfully. Please log in with your new password.
           </Text>
 
           <Button
@@ -74,12 +161,6 @@ export default function ForgotPasswordScreen() {
             style={styles.button}
           />
 
-          <Button
-            title="Didn't receive email? Try again"
-            onPress={() => setIsSent(false)}
-            variant="ghost"
-            fullWidth
-          />
         </View>
       </SafeAreaView>
     );
@@ -91,47 +172,145 @@ export default function ForgotPasswordScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}
       >
-        <View style={styles.content}>
-          <View style={[styles.iconContainer, { backgroundColor: colors.primary + '20' }]}>
-            <Ionicons name="lock-closed-outline" size={48} color={colors.primary} />
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.content}>
+            <View style={[styles.iconContainer, { backgroundColor: colors.backgroundSecondary }]}>
+              <Ionicons
+                name={step === 'request' ? 'lock-closed-outline' : 'key-outline'}
+                size={48}
+                color={colors.text}
+              />
+            </View>
+
+            <Text style={[styles.stepTag, { color: colors.textSecondary, borderColor: colors.border }]}>
+              {step === 'request' ? 'Step 1 of 2' : 'Step 2 of 2'}
+            </Text>
+
+            <Text style={[styles.title, { color: colors.text }]}>
+              {step === 'request' ? 'Reset your password' : 'Enter code and new password'}
+            </Text>
+
+            <Text style={[styles.description, { color: colors.textSecondary }]}>
+              {step === 'request'
+                ? 'We will email you a 6-digit code to reset your password.'
+                : 'Enter the 6-digit code we sent and set a new password.'}
+            </Text>
+
+            {step === 'verify' && (
+              <View
+                style={[
+                  styles.emailPill,
+                  { backgroundColor: colors.backgroundSecondary, borderColor: colors.border },
+                ]}
+              >
+                <Ionicons name="mail-outline" size={16} color={colors.textSecondary} />
+                <Text
+                  style={[styles.emailText, { color: colors.text }]}
+                  numberOfLines={1}
+                >
+                  {email}
+                </Text>
+                <TouchableOpacity onPress={handleChangeEmail}>
+                  <Text style={[styles.changeEmailText, { color: colors.textSecondary }]}>
+                    Change
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
+
+            <View style={styles.form}>
+              {step === 'request' ? (
+                <>
+                  <Input
+                    value={email}
+                    onChangeText={setEmail}
+                    placeholder="Email"
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    autoComplete="email"
+                    error={errors.email}
+                    leftIcon="mail-outline"
+                  />
+
+                  <Button
+                    title="Send Code"
+                    onPress={handleSendCode}
+                    loading={isSending}
+                    fullWidth
+                    style={styles.button}
+                  />
+
+                  <Button
+                    title="Back to Login"
+                    onPress={() => router.back()}
+                    variant="ghost"
+                    fullWidth
+                  />
+                </>
+              ) : (
+                <>
+                  <Input
+                    value={code}
+                    onChangeText={handleCodeChange}
+                    placeholder="6-digit code"
+                    keyboardType="numeric"
+                    autoCapitalize="none"
+                    maxLength={6}
+                    error={errors.code}
+                    leftIcon="key-outline"
+                  />
+
+                  <Input
+                    value={password}
+                    onChangeText={setPassword}
+                    placeholder="New password"
+                    secureTextEntry
+                    autoComplete="password"
+                    error={errors.password}
+                    leftIcon="lock-closed-outline"
+                  />
+
+                  <Input
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                    placeholder="Confirm new password"
+                    secureTextEntry
+                    autoComplete="password"
+                    error={errors.confirmPassword}
+                    leftIcon="lock-closed-outline"
+                  />
+
+                  <Button
+                    title="Reset Password"
+                    onPress={handleVerifyAndReset}
+                    loading={isVerifying}
+                    fullWidth
+                    style={styles.button}
+                    disabled={!code || !password || !confirmPassword}
+                  />
+
+                  <Button
+                    title="Resend Code"
+                    onPress={handleResendCode}
+                    variant="ghost"
+                    fullWidth
+                    disabled={isSending}
+                  />
+
+                  <Button
+                    title="Back to Login"
+                    onPress={() => router.replace('/(auth)/login')}
+                    variant="ghost"
+                    fullWidth
+                  />
+                </>
+              )}
+            </View>
           </View>
-
-          <Text style={[styles.title, { color: colors.text }]}>
-            Forgot password?
-          </Text>
-
-          <Text style={[styles.description, { color: colors.textSecondary }]}>
-            Enter your email address and we'll send you instructions to reset your password.
-          </Text>
-
-          <View style={styles.form}>
-            <Input
-              value={email}
-              onChangeText={setEmail}
-              placeholder="Email"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoComplete="email"
-              error={error}
-              leftIcon="mail-outline"
-            />
-
-            <Button
-              title="Send Reset Link"
-              onPress={handleReset}
-              loading={isLoading}
-              fullWidth
-              style={styles.button}
-            />
-
-            <Button
-              title="Back to Login"
-              onPress={() => router.back()}
-              variant="ghost"
-              fullWidth
-            />
-          </View>
-        </View>
+        </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -144,10 +323,14 @@ const styles = StyleSheet.create({
   keyboardView: {
     flex: 1,
   },
-  content: {
-    flex: 1,
+  scrollContent: {
+    flexGrow: 1,
     justifyContent: 'center',
     padding: Spacing.xl,
+  },
+  content: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   iconContainer: {
     width: 100,
@@ -157,6 +340,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'center',
     marginBottom: Spacing.xl,
+  },
+  stepTag: {
+    fontSize: Typography.sizes.xs,
+    fontWeight: Typography.weights.semibold,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    borderWidth: 1,
+    borderRadius: BorderRadius.full,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.xs,
+    marginBottom: Spacing.sm,
   },
   title: {
     fontSize: Typography.sizes['2xl'],
@@ -170,8 +364,27 @@ const styles = StyleSheet.create({
     lineHeight: Typography.sizes.base * Typography.lineHeights.relaxed,
     marginBottom: Spacing.xl,
   },
+  emailPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderRadius: BorderRadius.full,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    width: '100%',
+    marginBottom: Spacing.lg,
+  },
+  emailText: {
+    flex: 1,
+    marginLeft: Spacing.sm,
+    fontWeight: Typography.weights.semibold,
+  },
+  changeEmailText: {
+    fontSize: Typography.sizes.sm,
+    fontWeight: Typography.weights.medium,
+  },
   form: {
-    marginTop: Spacing.md,
+    width: '100%',
   },
   button: {
     marginTop: Spacing.md,

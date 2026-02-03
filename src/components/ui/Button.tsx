@@ -57,14 +57,14 @@ export function Button({
     if (disabled) return colors.textTertiary;
     switch (variant) {
       case 'primary':
-        return '#FFFFFF';
+        return colors.textInverse;
       case 'secondary':
         return colors.text;
       case 'outline':
       case 'ghost':
-        return colors.primary;
+        return colors.text;
       default:
-        return '#FFFFFF';
+        return colors.textInverse;
     }
   };
 

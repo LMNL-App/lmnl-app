@@ -102,7 +102,7 @@ export default function PrivacyScreen() {
 
       {/* Info */}
       <View style={[styles.infoBox, { backgroundColor: colors.backgroundSecondary }]}>
-        <Ionicons name="shield-checkmark-outline" size={24} color={colors.primary} />
+        <Ionicons name="shield-checkmark-outline" size={24} color={colors.success} />
         <Text style={[styles.infoText, { color: colors.textSecondary }]}>
           LMNL is designed with your privacy in mind. We don't sell your data to advertisers and only collect what's necessary to provide our service.
         </Text>

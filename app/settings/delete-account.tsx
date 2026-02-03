@@ -148,12 +148,12 @@ export default function DeleteAccountScreen() {
             styles.deleteButton,
             { backgroundColor: canDelete ? colors.error : colors.backgroundSecondary },
           ]}
-          textStyle={{ color: canDelete ? '#FFFFFF' : colors.textTertiary }}
+          textStyle={{ color: canDelete ? '#FDFCFB' : colors.textTertiary }}
         />
 
         {/* Cancel Link */}
         <Text
-          style={[styles.cancelText, { color: colors.primary }]}
+          style={[styles.cancelText, { color: colors.textSecondary }]}
           onPress={() => router.back()}
         >
           Cancel and keep my account

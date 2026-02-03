@@ -5,129 +5,129 @@
 
 export const Colors = {
   light: {
-    // Primary colors
-    primary: '#007AFF',
-    primaryLight: '#4DA3FF',
-    primaryDark: '#0056B3',
+    // Primary colors — restrained ink black
+    primary: '#1A1A1A',
+    primaryLight: '#4A4A4A',
+    primaryDark: '#000000',
 
-    // Background colors
-    background: '#FFFFFF',
-    backgroundSecondary: '#F5F5F5',
-    backgroundTertiary: '#EBEBEB',
+    // Background colors — warm off-whites
+    background: '#F7F5F2',
+    backgroundSecondary: '#EFECEA',
+    backgroundTertiary: '#E5E2DD',
 
     // Surface colors
-    surface: '#FFFFFF',
-    surfaceSecondary: '#F8F8F8',
+    surface: '#FDFCFB',
+    surfaceSecondary: '#F2F0ED',
 
-    // Text colors
-    text: '#000000',
-    textSecondary: '#666666',
-    textTertiary: '#999999',
-    textInverse: '#FFFFFF',
+    // Text colors — warm charcoals
+    text: '#1A1A1A',
+    textSecondary: '#6B6560',
+    textTertiary: '#9E9892',
+    textInverse: '#FDFCFB',
 
-    // Border colors
-    border: '#E0E0E0',
-    borderLight: '#F0F0F0',
+    // Border colors — warm grays
+    border: '#DDD9D3',
+    borderLight: '#EFECEA',
 
-    // Status colors
-    success: '#34C759',
-    warning: '#FF9500',
-    error: '#FF3B30',
-    info: '#5856D6',
+    // Status colors — muted, earthy
+    success: '#2E7D5E',
+    warning: '#C47B2B',
+    error: '#B5433E',
+    info: '#4A6FA5',
 
     // Interactive colors
-    like: '#FF3B30',
-    likeInactive: '#999999',
+    like: '#B5433E',
+    likeInactive: '#9E9892',
 
     // Sponsored/Ad indicator
-    sponsored: '#FF9500',
-    sponsoredBackground: '#FFF8E6',
+    sponsored: '#C47B2B',
+    sponsoredBackground: '#FAF7F2',
 
     // Tab bar
-    tabBar: '#FFFFFF',
-    tabBarBorder: '#E0E0E0',
-    tabBarActive: '#007AFF',
-    tabBarInactive: '#999999',
+    tabBar: '#FDFCFB',
+    tabBarBorder: '#DDD9D3',
+    tabBarActive: '#1A1A1A',
+    tabBarInactive: '#9E9892',
 
     // Card
-    card: '#FFFFFF',
-    cardBorder: '#F0F0F0',
+    card: '#FDFCFB',
+    cardBorder: '#EFECEA',
 
     // Input
-    input: '#F5F5F5',
-    inputBorder: '#E0E0E0',
-    inputFocus: '#007AFF',
-    placeholder: '#999999',
+    input: '#FDFCFB',
+    inputBorder: '#DDD9D3',
+    inputFocus: '#1A1A1A',
+    placeholder: '#9E9892',
 
     // Overlay
-    overlay: 'rgba(0, 0, 0, 0.5)',
+    overlay: 'rgba(26, 26, 26, 0.45)',
 
     // Skeleton loading
-    skeleton: '#E0E0E0',
-    skeletonHighlight: '#F5F5F5',
+    skeleton: '#E5E2DD',
+    skeletonHighlight: '#EFECEA',
   },
 
   dark: {
-    // Primary colors
-    primary: '#0A84FF',
-    primaryLight: '#4DA3FF',
-    primaryDark: '#0056B3',
+    // Primary colors — soft white
+    primary: '#E8E4DF',
+    primaryLight: '#C9C3BC',
+    primaryDark: '#FDFCFB',
 
-    // Background colors
-    background: '#000000',
-    backgroundSecondary: '#1C1C1E',
-    backgroundTertiary: '#2C2C2E',
+    // Background colors — warm dark
+    background: '#1C1A17',
+    backgroundSecondary: '#252219',
+    backgroundTertiary: '#2E2B26',
 
     // Surface colors
-    surface: '#1C1C1E',
-    surfaceSecondary: '#2C2C2E',
+    surface: '#222019',
+    surfaceSecondary: '#2A2720',
 
     // Text colors
-    text: '#FFFFFF',
-    textSecondary: '#EBEBF5',
-    textTertiary: '#8E8E93',
-    textInverse: '#000000',
+    text: '#E8E4DF',
+    textSecondary: '#B3ADA6',
+    textTertiary: '#756F67',
+    textInverse: '#1C1A17',
 
     // Border colors
-    border: '#38383A',
-    borderLight: '#2C2C2E',
+    border: '#3A362F',
+    borderLight: '#2E2B26',
 
     // Status colors
-    success: '#30D158',
-    warning: '#FF9F0A',
-    error: '#FF453A',
-    info: '#5E5CE6',
+    success: '#4CAF82',
+    warning: '#D4944A',
+    error: '#D45A53',
+    info: '#6B9FD4',
 
     // Interactive colors
-    like: '#FF453A',
-    likeInactive: '#8E8E93',
+    like: '#D45A53',
+    likeInactive: '#756F67',
 
     // Sponsored/Ad indicator
-    sponsored: '#FF9F0A',
-    sponsoredBackground: '#3D3000',
+    sponsored: '#D4944A',
+    sponsoredBackground: '#2A2520',
 
     // Tab bar
-    tabBar: '#1C1C1E',
-    tabBarBorder: '#38383A',
-    tabBarActive: '#0A84FF',
-    tabBarInactive: '#8E8E93',
+    tabBar: '#222019',
+    tabBarBorder: '#3A362F',
+    tabBarActive: '#E8E4DF',
+    tabBarInactive: '#756F67',
 
     // Card
-    card: '#1C1C1E',
-    cardBorder: '#38383A',
+    card: '#222019',
+    cardBorder: '#3A362F',
 
     // Input
-    input: '#2C2C2E',
-    inputBorder: '#38383A',
-    inputFocus: '#0A84FF',
-    placeholder: '#8E8E93',
+    input: '#2A2720',
+    inputBorder: '#3A362F',
+    inputFocus: '#E8E4DF',
+    placeholder: '#756F67',
 
     // Overlay
-    overlay: 'rgba(0, 0, 0, 0.7)',
+    overlay: 'rgba(0, 0, 0, 0.6)',
 
     // Skeleton loading
-    skeleton: '#2C2C2E',
-    skeletonHighlight: '#3C3C3E',
+    skeleton: '#2E2B26',
+    skeletonHighlight: '#3A362F',
   },
 } as const;
 
@@ -178,38 +178,38 @@ export const Spacing = {
   '4xl': 48,
 } as const;
 
-// Border radius
+// Border radius — slightly tighter for editorial feel
 export const BorderRadius = {
   none: 0,
   sm: 4,
-  md: 8,
-  lg: 12,
-  xl: 16,
-  '2xl': 20,
+  md: 6,
+  lg: 10,
+  xl: 14,
+  '2xl': 18,
   full: 9999,
 } as const;
 
-// Shadows (for light mode)
+// Shadows — very subtle, warm-tinted
 export const Shadows = {
   sm: {
-    shadowColor: '#000',
+    shadowColor: '#1A1A1A',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
+    shadowOpacity: 0.04,
     shadowRadius: 2,
     elevation: 1,
   },
   md: {
-    shadowColor: '#000',
+    shadowColor: '#1A1A1A',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
     elevation: 2,
   },
   lg: {
-    shadowColor: '#000',
+    shadowColor: '#1A1A1A',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
     elevation: 4,
   },
 } as const;

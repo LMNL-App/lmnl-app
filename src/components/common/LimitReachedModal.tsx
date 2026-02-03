@@ -81,7 +81,7 @@ export function LimitReachedModal({
                 <Ionicons
                   name={config.icon}
                   size={32}
-                  color={colors.primary}
+                  color={colors.text}
                 />
               </View>
 
@@ -114,7 +114,7 @@ export function LimitReachedModal({
 
               {/* Close button */}
               <TouchableOpacity
-                style={[styles.button, { backgroundColor: colors.primary }]}
+                style={[styles.button, { backgroundColor: colors.text }]}
                 onPress={onClose}
                 activeOpacity={0.8}
               >

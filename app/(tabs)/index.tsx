@@ -129,7 +129,7 @@ export default function FeedScreen() {
     >
       {/* Header */}
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
-        <Text style={[styles.logo, { color: colors.text }]}>LMNL</Text>
+        <Text style={[styles.logo, { color: colors.text }]}>lmnl</Text>
       </View>
 
       {/* Feed */}
@@ -172,9 +172,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logo: {
-    fontSize: Typography.sizes.xl,
+    fontSize: Typography.sizes.lg,
     fontWeight: Typography.weights.bold,
-    letterSpacing: 2,
+    letterSpacing: 4,
   },
   loadingFooter: {
     padding: Spacing.xl,

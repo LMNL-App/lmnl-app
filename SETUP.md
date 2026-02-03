@@ -201,6 +201,7 @@ npm run web        # Open in web browser
 # Ensure Android Studio and an AVD are set up
 cd C:\Users\Samin\AppData\Local\Android\Sdk\emulator
 .\emulator -avd Pixel_9_Pro_API_35
+C:\Users\Samin\AppData\Local\Android\Sdk/platform-tools/adb 
 npm run android
 ```
 

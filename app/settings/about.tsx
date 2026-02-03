@@ -14,20 +14,14 @@ export default function AboutScreen() {
     <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Logo Section */}
       <View style={styles.logoSection}>
-        <View style={[styles.logoCircles]}>
-          <View style={[styles.circle, styles.circle1]} />
-          <View style={[styles.circle, styles.circle2]} />
-          <View style={[styles.circle, styles.circle3]} />
-          <View style={[styles.circle, styles.circle4]} />
-        </View>
-        <Text style={[styles.logoText, { color: colors.text }]}>LMNL</Text>
-        <Text style={[styles.tagline, { color: colors.textSecondary }]}>
-          Quality over Quantity
+        <Text style={[styles.logoText, { color: colors.text }]}>lmnl</Text>
+        <Text style={[styles.tagline, { color: colors.textTertiary }]}>
+          quality over quantity
         </Text>
       </View>
 
       {/* Philosophy Section */}
-      <View style={[styles.section, { backgroundColor: colors.surface }]}>
+      <View style={[styles.section, { backgroundColor: colors.surface, borderColor: colors.border }]}>
         <Text style={[styles.sectionTitle, { color: colors.text }]}>
           Our Philosophy
         </Text>
@@ -47,7 +41,7 @@ export default function AboutScreen() {
 
         <View style={styles.limitsGrid}>
           <View style={styles.limitItem}>
-            <Text style={[styles.limitValue, { color: colors.primary }]}>
+            <Text style={[styles.limitValue, { color: colors.text }]}>
               {DAILY_LIMITS.POSTS_STANDARD}
             </Text>
             <Text style={[styles.limitLabel, { color: colors.textSecondary }]}>
@@ -55,7 +49,7 @@ export default function AboutScreen() {
             </Text>
           </View>
           <View style={styles.limitItem}>
-            <Text style={[styles.limitValue, { color: colors.primary }]}>
+            <Text style={[styles.limitValue, { color: colors.text }]}>
               {DAILY_LIMITS.LIKES}
             </Text>
             <Text style={[styles.limitLabel, { color: colors.textSecondary }]}>
@@ -63,7 +57,7 @@ export default function AboutScreen() {
             </Text>
           </View>
           <View style={styles.limitItem}>
-            <Text style={[styles.limitValue, { color: colors.primary }]}>
+            <Text style={[styles.limitValue, { color: colors.text }]}>
               {DAILY_LIMITS.COMMENTS}
             </Text>
             <Text style={[styles.limitLabel, { color: colors.textSecondary }]}>
@@ -71,7 +65,7 @@ export default function AboutScreen() {
             </Text>
           </View>
           <View style={styles.limitItem}>
-            <Text style={[styles.limitValue, { color: colors.primary }]}>
+            <Text style={[styles.limitValue, { color: colors.text }]}>
               {DAILY_LIMITS.FEED_POSTS}
             </Text>
             <Text style={[styles.limitLabel, { color: colors.textSecondary }]}>
@@ -121,7 +115,7 @@ export default function AboutScreen() {
           Version 1.0.0
         </Text>
         <TouchableOpacity onPress={() => Linking.openURL(APP_CONFIG.webBaseUrl)}>
-          <Text style={[styles.link, { color: colors.primary }]}>
+          <Text style={[styles.link, { color: colors.text }]}>
             {APP_CONFIG.webBaseUrl.replace('https://', '')}
           </Text>
         </TouchableOpacity>
@@ -139,51 +133,22 @@ const styles = StyleSheet.create({
     padding: Spacing.xl,
     paddingTop: Spacing['2xl'],
   },
-  logoCircles: {
-    width: 80,
-    height: 80,
-    position: 'relative',
-    marginBottom: Spacing.base,
-  },
-  circle: {
-    position: 'absolute',
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-  },
-  circle1: {
-    backgroundColor: '#FF6B6B',
-    top: 0,
-    left: 0,
-  },
-  circle2: {
-    backgroundColor: '#4ECDC4',
-    top: 0,
-    right: 0,
-  },
-  circle3: {
-    backgroundColor: '#45B7D1',
-    bottom: 0,
-    left: 0,
-  },
-  circle4: {
-    backgroundColor: '#96CEB4',
-    bottom: 0,
-    right: 0,
-  },
   logoText: {
     fontSize: Typography.sizes['3xl'],
     fontWeight: Typography.weights.bold,
-    letterSpacing: 4,
+    letterSpacing: 6,
   },
   tagline: {
-    fontSize: Typography.sizes.base,
+    fontSize: Typography.sizes.xs,
     marginTop: Spacing.xs,
+    textTransform: 'uppercase',
+    letterSpacing: 2,
   },
   section: {
     margin: Spacing.base,
     padding: Spacing.base,
     borderRadius: BorderRadius.lg,
+    borderWidth: 1,
   },
   sectionTitle: {
     fontSize: Typography.sizes.lg,

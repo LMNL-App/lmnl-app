@@ -177,7 +177,7 @@ export default function CreatePostScreen() {
           <Ionicons
             name="information-circle-outline"
             size={20}
-            color={postsRemaining > 0 ? colors.primary : colors.error}
+            color={postsRemaining > 0 ? colors.textTertiary : colors.error}
           />
           <Text
             style={[
@@ -289,7 +289,7 @@ const styles = StyleSheet.create({
     width: '100%',
     aspectRatio: 1,
     borderRadius: BorderRadius.lg,
-    backgroundColor: '#E0E0E0',
+    backgroundColor: '#E5E2DD',
   },
   removeButton: {
     position: 'absolute',
@@ -318,7 +318,7 @@ const styles = StyleSheet.create({
   imagePicker: {
     margin: Spacing.base,
     padding: Spacing.xl,
-    borderWidth: 2,
+    borderWidth: 1,
     borderStyle: 'dashed',
     borderRadius: BorderRadius.lg,
     alignItems: 'center',

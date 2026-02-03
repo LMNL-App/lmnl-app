@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.1)',
+    backgroundColor: 'rgba(26,26,26,0.08)',
   },
   errorContainer: {
     padding: Spacing.md,
@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   errorText: {
-    color: '#FFFFFF',
+    color: '#FDFCFB',
     fontSize: Typography.sizes.sm,
     textAlign: 'center',
   },

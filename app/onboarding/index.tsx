@@ -34,7 +34,7 @@ const slides: OnboardingSlide[] = [
   {
     id: '1',
     icon: 'sparkles',
-    iconColor: '#FFD700',
+    iconColor: '#C47B2B',
     title: 'Quality Over Quantity',
     description:
       'LMNL is designed for intentional social media use. Every post, like, and comment counts.',
@@ -42,7 +42,7 @@ const slides: OnboardingSlide[] = [
   {
     id: '2',
     icon: 'today',
-    iconColor: '#4ECDC4',
+    iconColor: '#4A6FA5',
     title: 'Daily Focus',
     description:
       'View up to 10 posts per day. No infinite scroll, no endless feed. Be present with what you see.',
@@ -50,7 +50,7 @@ const slides: OnboardingSlide[] = [
   {
     id: '3',
     icon: 'heart',
-    iconColor: '#FF6B6B',
+    iconColor: '#B5433E',
     title: 'Intentional Engagement',
     description:
       'With 5 likes and 5 comments per day, every interaction becomes meaningful.',
@@ -58,7 +58,7 @@ const slides: OnboardingSlide[] = [
   {
     id: '4',
     icon: 'leaf',
-    iconColor: '#96CEB4',
+    iconColor: '#2E7D5E',
     title: 'Digital Wellbeing',
     description:
       "LMNL gently reminds you to log off when you've reached your limits. Your time is valuable.",
@@ -199,9 +199,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xl,
   },
   iconContainer: {
-    width: 140,
-    height: 140,
-    borderRadius: 70,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: Spacing['2xl'],

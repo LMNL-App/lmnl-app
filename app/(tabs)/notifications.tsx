@@ -88,7 +88,7 @@ export default function NotificationsScreen() {
       case 'like':
         return { name: 'heart', color: colors.like };
       case 'comment':
-        return { name: 'chatbubble', color: colors.primary };
+        return { name: 'chatbubble', color: colors.info };
       case 'follow':
         return { name: 'person-add', color: colors.success };
       case 'mention':
@@ -133,6 +133,7 @@ export default function NotificationsScreen() {
       <TouchableOpacity
         style={[
           styles.notificationItem,
+          { borderBottomColor: colors.border },
           !item.is_read && { backgroundColor: colors.backgroundSecondary },
         ]}
         onPress={() => handlePress(item)}
@@ -143,7 +144,7 @@ export default function NotificationsScreen() {
             name={item.actor.full_name}
             size="medium"
           />
-          <View style={[styles.typeIcon, { backgroundColor: colors.background }]}>
+          <View style={[styles.typeIcon, { backgroundColor: colors.surface, borderColor: colors.background }]}>
             <Ionicons
               name={icon.name as any}
               size={14}
@@ -232,8 +233,7 @@ const styles = StyleSheet.create({
   notificationItem: {
     flexDirection: 'row',
     padding: Spacing.base,
-    borderBottomWidth: 0.5,
-    borderBottomColor: 'rgba(0,0,0,0.1)',
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   iconContainer: {
     position: 'relative',

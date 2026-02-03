@@ -38,9 +38,9 @@ function getInitials(name?: string): string {
 
 function getColorFromName(name?: string): string {
   const colors = [
-    '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4',
-    '#FFEAA7', '#DDA0DD', '#98D8C8', '#F7DC6F',
-    '#BB8FCE', '#85C1E9', '#F8B500', '#00CED1',
+    '#C4B5A0', '#A3BFA8', '#B5C4D1', '#D1C4A3',
+    '#C4A3A3', '#A3C4C4', '#BFA3C4', '#C4BFA3',
+    '#A3A3C4', '#C4A3BF', '#A8B5A3', '#B5A3A8',
   ];
 
   if (!name) return colors[0];
@@ -87,7 +87,7 @@ export function Avatar({ uri, name, size = 'medium', style }: AvatarProps) {
         style,
       ]}
     >
-      <Text style={[styles.initials, { fontSize, color: '#FFFFFF' }]}>
+      <Text style={[styles.initials, { fontSize, color: '#1A1A1A' }]}>
         {getInitials(name)}
       </Text>
     </View>
@@ -96,7 +96,7 @@ export function Avatar({ uri, name, size = 'medium', style }: AvatarProps) {
 
 const styles = StyleSheet.create({
   image: {
-    backgroundColor: '#E0E0E0',
+    backgroundColor: '#E5E2DD',
   },
   placeholder: {
     alignItems: 'center',

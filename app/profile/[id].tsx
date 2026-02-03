@@ -314,7 +314,7 @@ export default function UserProfileScreen() {
             {profile.full_name}
           </Text>
 
-          <Text style={[styles.username, { color: colors.textSecondary }]}>
+          <Text style={[styles.username, { color: colors.textTertiary }]}>
             @{profile.username}
           </Text>
 
@@ -326,7 +326,7 @@ export default function UserProfileScreen() {
 
           {profile.website && (
             <TouchableOpacity>
-              <Text style={[styles.website, { color: colors.primary }]}>
+              <Text style={[styles.website, { color: colors.textSecondary }]}>
                 {profile.website}
               </Text>
             </TouchableOpacity>
@@ -477,7 +477,7 @@ const styles = StyleSheet.create({
   postImage: {
     width: '100%',
     height: '100%',
-    backgroundColor: '#E0E0E0',
+    backgroundColor: '#E5E2DD',
   },
   textPost: {
     width: '100%',

@@ -282,7 +282,7 @@ export default function PostDetailScreen() {
           <Avatar uri={post.avatar_url} name={post.full_name} size="medium" />
           <View style={styles.headerInfo}>
             <Text style={[styles.username, { color: colors.text }]}>
-              @{post.username}
+              {post.username}
             </Text>
             <Text style={[styles.timestamp, { color: colors.textTertiary }]}>
               {formatTimestamp(post.created_at)}
@@ -442,7 +442,7 @@ const styles = StyleSheet.create({
   image: {
     width: SCREEN_WIDTH,
     height: SCREEN_WIDTH,
-    backgroundColor: '#E0E0E0',
+    backgroundColor: '#E5E2DD',
   },
   actions: {
     flexDirection: 'row',

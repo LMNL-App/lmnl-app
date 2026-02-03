@@ -32,26 +32,26 @@ export function ActivityDashboard() {
   const { postsRemaining, likesRemaining, commentsRemaining } = useUsageStore();
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.surface }]}>
-      <Text style={[styles.title, { color: colors.text }]}>Today's activity</Text>
+    <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+      <Text style={[styles.title, { color: colors.textTertiary }]}>today</Text>
 
       <View style={styles.statsRow}>
         <StatItem
           value={postsRemaining}
-          label="Posts left"
-          color={postsRemaining > 0 ? colors.primary : colors.error}
+          label="posts"
+          color={postsRemaining > 0 ? colors.text : colors.error}
         />
         <View style={[styles.divider, { backgroundColor: colors.border }]} />
         <StatItem
           value={commentsRemaining}
-          label="Comments left"
-          color={commentsRemaining > 0 ? colors.primary : colors.error}
+          label="comments"
+          color={commentsRemaining > 0 ? colors.text : colors.error}
         />
         <View style={[styles.divider, { backgroundColor: colors.border }]} />
         <StatItem
           value={likesRemaining}
-          label="Likes left"
-          color={likesRemaining > 0 ? colors.primary : colors.error}
+          label="likes"
+          color={likesRemaining > 0 ? colors.text : colors.error}
         />
       </View>
     </View>
@@ -64,12 +64,15 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.lg,
     marginHorizontal: Spacing.base,
     marginVertical: Spacing.sm,
+    borderWidth: 1,
   },
   title: {
-    fontSize: Typography.sizes.sm,
+    fontSize: Typography.sizes.xs,
     fontWeight: Typography.weights.medium,
     textAlign: 'center',
     marginBottom: Spacing.md,
+    textTransform: 'uppercase',
+    letterSpacing: 1.5,
   },
   statsRow: {
     flexDirection: 'row',
@@ -87,6 +90,8 @@ const styles = StyleSheet.create({
   statLabel: {
     fontSize: Typography.sizes.xs,
     marginTop: Spacing.xs,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   divider: {
     width: 1,

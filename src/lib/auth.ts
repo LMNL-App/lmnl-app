@@ -66,14 +66,28 @@ export async function signOut() {
 }
 
 /**
- * Send password reset email
+ * Send password reset code (via email)
  */
-export async function resetPassword(email: string) {
+export async function sendPasswordResetCode(email: string) {
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: 'lmnl://reset-password',
   });
 
   if (error) throw error;
+}
+
+/**
+ * Verify password reset code
+ */
+export async function verifyPasswordResetCode(email: string, code: string) {
+  const { data, error } = await supabase.auth.verifyOtp({
+    email,
+    token: code,
+    type: 'recovery',
+  });
+
+  if (error) throw error;
+  return data;
 }
 
 /**
