@@ -47,6 +47,9 @@
             }
           ]
         }
+      ],
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
       ]
     },
     "web": {
@@ -85,11 +88,13 @@
     ],
     "extra": {
       "router": {
-        "origin": false
+        "origin": false,
+        "root": "./app"
       },
       "eas": {
-        "projectId": "your-project-id"
+        "projectId": "ba49f442-e2e9-4952-81a9-4278624ecbf6"
       }
-    }
+    },
+    "owner": "blitzwolfz"
   }
 }
