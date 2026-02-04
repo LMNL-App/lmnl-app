@@ -38,6 +38,7 @@ export default function ProfileScreen() {
   const { colors } = useThemeStore();
   const { profile, fetchProfile, user } = useAuthStore();
   const [posts, setPosts] = useState<Post[]>([]);
+  const [savedPosts, setSavedPosts] = useState<Post[]>([]);
   const [stats, setStats] = useState<UserStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -57,6 +58,24 @@ export default function ProfileScreen() {
 
       if (postsError) throw postsError;
       setPosts(postsData || []);
+
+      // Fetch saved posts (liked posts for this user)
+      const { data: savedData, error: savedError } = await supabase
+        .from('interactions')
+        .select('post:posts(*)')
+        .eq('user_id', user.id)
+        .eq('type', 'like')
+        .eq('post.is_sponsored', false)
+        .order('created_at', { ascending: false });
+
+      if (savedError) {
+        console.error('Error fetching saved posts:', savedError);
+      } else {
+        const mapped = (savedData || [])
+          .map((row: { post: Post | null }) => row.post)
+          .filter((post): post is Post => !!post);
+        setSavedPosts(mapped);
+      }
 
       // Fetch stats
       const { data: statsData, error: statsError } = await supabase
@@ -129,9 +148,9 @@ export default function ProfileScreen() {
     </View>
   );
 
-  const renderPostGrid = () => (
+  const renderPostGrid = (items: Post[]) => (
     <View style={styles.postsGrid}>
-      {posts.map((post, index) => (
+      {items.map((post, index) => (
         <TouchableOpacity
           key={post.id}
           style={[
@@ -284,7 +303,7 @@ export default function ProfileScreen() {
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={colors.primary} />
           </View>
-        ) : posts.length === 0 ? (
+        ) : activeTab === 'posts' && posts.length === 0 ? (
           <View style={styles.emptyContainer}>
             <Ionicons name="camera-outline" size={64} color={colors.textTertiary} />
             <Text style={[styles.emptyTitle, { color: colors.text }]}>
@@ -294,8 +313,18 @@ export default function ProfileScreen() {
               Share your first mindful moment
             </Text>
           </View>
+        ) : activeTab === 'saved' && savedPosts.length === 0 ? (
+          <View style={styles.emptyContainer}>
+            <Ionicons name="bookmark-outline" size={64} color={colors.textTertiary} />
+            <Text style={[styles.emptyTitle, { color: colors.text }]}>
+              No saved posts
+            </Text>
+            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+              Posts you like will appear here
+            </Text>
+          </View>
         ) : (
-          renderPostGrid()
+          renderPostGrid(activeTab === 'posts' ? posts : savedPosts)
         )}
       </ScrollView>
     </SafeAreaView>

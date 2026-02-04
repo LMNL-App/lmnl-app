@@ -43,10 +43,21 @@ export async function compressImage(
     quality = APP_CONFIG.imageQuality,
   } = options;
 
-  // First pass: resize if needed
+  const { width: originalWidth, height: originalHeight } = await getImageDimensions(uri);
+  const scale = Math.min(
+    maxWidth / originalWidth,
+    maxHeight / originalHeight,
+    1
+  );
+  const targetWidth = Math.round(originalWidth * scale);
+  const targetHeight = Math.round(originalHeight * scale);
+  const resizeAction =
+    scale < 1 ? [{ resize: { width: targetWidth, height: targetHeight } }] : [];
+
+  // First pass: resize (if needed) and compress
   let result = await ImageManipulator.manipulateAsync(
     uri,
-    [{ resize: { width: maxWidth, height: maxHeight } }],
+    resizeAction,
     { compress: quality, format: ImageManipulator.SaveFormat.JPEG }
   );
 
@@ -59,7 +70,7 @@ export async function compressImage(
     currentQuality -= 0.1;
     result = await ImageManipulator.manipulateAsync(
       uri,
-      [{ resize: { width: maxWidth, height: maxHeight } }],
+      resizeAction,
       { compress: currentQuality, format: ImageManipulator.SaveFormat.JPEG }
     );
     fileSize = await getFileSize(result.uri);

@@ -9,9 +9,11 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
-  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useHeaderHeight } from '@react-navigation/elements';
 import * as ImagePicker from 'expo-image-picker';
 import { useThemeStore } from '../../src/stores/themeStore';
 import { useAuthStore } from '../../src/stores/authStore';
@@ -20,10 +22,11 @@ import { compressImage } from '../../src/utils/imageCompressor';
 import { validateUsername, validateFullName, validateBio, validateWebsite } from '../../src/utils/validation';
 import { Avatar, Button, Input } from '../../src/components/ui';
 import { APP_CONFIG } from '../../src/constants/config';
-import { Typography, Spacing, BorderRadius } from '../../src/constants/theme';
+import { Typography, Spacing } from '../../src/constants/theme';
 
 export default function EditProfileScreen() {
   const router = useRouter();
+  const headerHeight = useHeaderHeight();
   const { colors } = useThemeStore();
   const { profile, updateProfile, user } = useAuthStore();
 
@@ -115,10 +118,15 @@ export default function EditProfileScreen() {
   const displayAvatar = avatarUri || profile?.avatar_url;
 
   return (
-    <ScrollView
+    <KeyboardAvoidingView
       style={[styles.container, { backgroundColor: colors.background }]}
-      contentContainerStyle={styles.content}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={headerHeight}
     >
+      <ScrollView
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+      >
       {/* Avatar */}
       <TouchableOpacity style={styles.avatarSection} onPress={handlePickAvatar}>
         <Avatar
@@ -184,7 +192,8 @@ export default function EditProfileScreen() {
           fullWidth
         />
       </View>
-    </ScrollView>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
