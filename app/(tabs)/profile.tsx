@@ -59,12 +59,11 @@ export default function ProfileScreen() {
       if (postsError) throw postsError;
       setPosts(postsData || []);
 
-      // Fetch saved posts (liked posts for this user)
+      // Fetch saved posts
       const { data: savedData, error: savedError } = await supabase
-        .from('interactions')
+        .from('saved_posts')
         .select('post:posts(*)')
         .eq('user_id', user.id)
-        .eq('type', 'like')
         .eq('post.is_sponsored', false)
         .order('created_at', { ascending: false });
 
@@ -320,7 +319,7 @@ export default function ProfileScreen() {
               No saved posts
             </Text>
             <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
-              Posts you like will appear here
+              Save posts to view them later
             </Text>
           </View>
         ) : (

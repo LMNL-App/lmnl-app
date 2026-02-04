@@ -56,6 +56,7 @@ export interface FeedPost {
   likes_count: number;
   comments_count: number;
   is_liked: boolean;
+  is_saved: boolean;
 }
 
 export interface Interaction {

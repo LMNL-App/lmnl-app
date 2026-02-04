@@ -125,6 +125,7 @@ export default function CreatePostScreen() {
           likes_count: 0,
           comments_count: 0,
           is_liked: false,
+          is_saved: false,
         });
       }
 

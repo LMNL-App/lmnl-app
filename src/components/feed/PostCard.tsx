@@ -33,9 +33,10 @@ interface PostCardProps {
 export function PostCard({ post, onCommentPress }: PostCardProps) {
   const router = useRouter();
   const { colors } = useThemeStore();
-  const { likePost, unlikePost } = useFeedStore();
+  const { likePost, unlikePost, savePost, unsavePost } = useFeedStore();
   const { canLike, incrementLikes, decrementLikes, fetchUsage } = useUsageStore();
   const [isLiking, setIsLiking] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [limitModalVisible, setLimitModalVisible] = useState(false);
   const [limitModalType, setLimitModalType] = useState<LimitType>('likes');
 
@@ -79,6 +80,23 @@ export function PostCard({ post, onCommentPress }: PostCardProps) {
       } finally {
         setIsLiking(false);
       }
+    }
+  };
+
+  const handleSave = async () => {
+    if (isSaving) return;
+
+    setIsSaving(true);
+    try {
+      if (post.is_saved) {
+        await unsavePost(post.id);
+      } else {
+        await savePost(post.id);
+      }
+    } catch (error) {
+      console.error('Error saving post:', error);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -164,6 +182,18 @@ export function PostCard({ post, onCommentPress }: PostCardProps) {
               {post.comments_count}
             </Text>
           )}
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={handleSave}
+          disabled={isSaving}
+        >
+          <Ionicons
+            name={post.is_saved ? 'bookmark' : 'bookmark-outline'}
+            size={22}
+            color={post.is_saved ? colors.text : colors.textSecondary}
+          />
         </TouchableOpacity>
       </View>
 

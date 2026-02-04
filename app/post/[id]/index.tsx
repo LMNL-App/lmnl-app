@@ -43,6 +43,7 @@ export default function PostDetailScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLiking, setIsLiking] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [limitModalVisible, setLimitModalVisible] = useState(false);
   const [limitModalType, setLimitModalType] = useState<LimitType>('likes');
 
@@ -96,6 +97,14 @@ export default function PostDetailScreen() {
         .eq('type', 'like')
         .single();
 
+      // Check if current user saved the post
+      const { data: saveData } = await supabase
+        .from('saved_posts')
+        .select('id')
+        .eq('post_id', postId)
+        .eq('user_id', user?.id)
+        .single();
+
       const feedPost: FeedPost = {
         id: data.id,
         user_id: data.user_id,
@@ -110,6 +119,7 @@ export default function PostDetailScreen() {
         likes_count: likesCount || 0,
         comments_count: commentsCount || 0,
         is_liked: !!likeData,
+        is_saved: !!saveData,
       };
 
       setPost(feedPost);
@@ -266,6 +276,41 @@ export default function PostDetailScreen() {
     }
   };
 
+  const handleSave = async () => {
+    if (!post || isSaving) return;
+
+    setIsSaving(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      if (post.is_saved) {
+        const { error } = await supabase
+          .from('saved_posts')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('post_id', post.id);
+
+        if (error) throw error;
+        setPost({ ...post, is_saved: false });
+      } else {
+        const { error } = await supabase
+          .from('saved_posts')
+          .insert({
+            user_id: user.id,
+            post_id: post.id,
+          });
+
+        if (error) throw error;
+        setPost({ ...post, is_saved: true });
+      }
+    } catch (error) {
+      console.error('Error saving post:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const handleProfilePress = () => {
     if (post) {
       router.push(`/profile/${post.user_id}`);
@@ -331,6 +376,18 @@ export default function PostDetailScreen() {
               </Text>
             )}
           </View>
+
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={handleSave}
+            disabled={isSaving}
+          >
+            <Ionicons
+              name={post.is_saved ? 'bookmark' : 'bookmark-outline'}
+              size={22}
+              color={post.is_saved ? colors.text : colors.textSecondary}
+            />
+          </TouchableOpacity>
         </View>
 
         {/* Comments divider */}

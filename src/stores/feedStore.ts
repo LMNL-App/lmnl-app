@@ -20,6 +20,8 @@ interface FeedState {
   fetchSponsoredPost: () => Promise<void>;
   likePost: (postId: string) => Promise<void>;
   unlikePost: (postId: string) => Promise<void>;
+  savePost: (postId: string) => Promise<void>;
+  unsavePost: (postId: string) => Promise<void>;
   addPost: (post: FeedPost) => void;
   removePost: (postId: string) => void;
   clearFeed: () => void;
@@ -231,6 +233,73 @@ export const useFeedStore = create<FeedState>((set, get) => ({
       // Revert on error
       const revertedPosts = [...posts];
       set({ posts: revertedPosts });
+      throw error;
+    }
+  },
+
+  savePost: async (postId) => {
+    const { posts } = get();
+    const postIndex = posts.findIndex(p => p.id === postId);
+
+    if (postIndex !== -1) {
+      const updatedPosts = [...posts];
+      updatedPosts[postIndex] = {
+        ...updatedPosts[postIndex],
+        is_saved: true,
+      };
+      set({ posts: updatedPosts });
+    }
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const { error } = await supabase
+        .from('saved_posts')
+        .insert({
+          user_id: user.id,
+          post_id: postId,
+        });
+
+      if (error) throw error;
+    } catch (error: any) {
+      if (postIndex !== -1) {
+        const revertedPosts = [...posts];
+        set({ posts: revertedPosts });
+      }
+      throw error;
+    }
+  },
+
+  unsavePost: async (postId) => {
+    const { posts } = get();
+    const postIndex = posts.findIndex(p => p.id === postId);
+
+    if (postIndex !== -1) {
+      const updatedPosts = [...posts];
+      updatedPosts[postIndex] = {
+        ...updatedPosts[postIndex],
+        is_saved: false,
+      };
+      set({ posts: updatedPosts });
+    }
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const { error } = await supabase
+        .from('saved_posts')
+        .delete()
+        .eq('user_id', user.id)
+        .eq('post_id', postId);
+
+      if (error) throw error;
+    } catch (error: any) {
+      if (postIndex !== -1) {
+        const revertedPosts = [...posts];
+        set({ posts: revertedPosts });
+      }
       throw error;
     }
   },
