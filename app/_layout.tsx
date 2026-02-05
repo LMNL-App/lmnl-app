@@ -9,6 +9,8 @@ import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { useAuthStore } from '../src/stores/authStore';
 import { useThemeStore } from '../src/stores/themeStore';
 import { useUsageStore } from '../src/stores/usageStore';
+import { useToastStore } from '../src/stores/toastStore';
+import { ErrorBoundary, Toast } from '../src/components/common';
 
 function InitialLayout() {
   const router = useRouter();
@@ -67,6 +69,20 @@ function InitialLayout() {
   );
 }
 
+function GlobalToast() {
+  const { visible, message, type, duration, hide } = useToastStore();
+
+  return (
+    <Toast
+      visible={visible}
+      message={message}
+      type={type}
+      duration={duration}
+      onDismiss={hide}
+    />
+  );
+}
+
 export default function RootLayout() {
   const [isReady, setIsReady] = useState(false);
   const { initialize: initAuth } = useAuthStore();
@@ -104,10 +120,11 @@ export default function RootLayout() {
   }
 
   return (
-    <>
+    <ErrorBoundary>
       <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
       <InitialLayout />
-    </>
+      <GlobalToast />
+    </ErrorBoundary>
   );
 }
 
