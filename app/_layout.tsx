@@ -10,7 +10,9 @@ import { useAuthStore } from '../src/stores/authStore';
 import { useThemeStore } from '../src/stores/themeStore';
 import { useUsageStore } from '../src/stores/usageStore';
 import { useToastStore } from '../src/stores/toastStore';
-import { ErrorBoundary, Toast } from '../src/components/common';
+import { useOfflineStore } from '../src/stores/offlineStore';
+import { ErrorBoundary, Toast, OfflineBanner } from '../src/components/common';
+import { useNetworkStatus } from '../src/hooks/useNetworkStatus';
 
 function InitialLayout() {
   const router = useRouter();
@@ -119,9 +121,21 @@ export default function RootLayout() {
     );
   }
 
+  const { isOnline } = useNetworkStatus();
+  const { setOnline, loadQueue } = useOfflineStore();
+
+  useEffect(() => {
+    loadQueue();
+  }, []);
+
+  useEffect(() => {
+    setOnline(isOnline);
+  }, [isOnline]);
+
   return (
     <ErrorBoundary>
       <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+      <OfflineBanner isOnline={isOnline} />
       <InitialLayout />
       <GlobalToast />
     </ErrorBoundary>
