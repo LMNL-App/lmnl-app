@@ -15,7 +15,7 @@ interface CommentItemProps {
   comment: Comment;
 }
 
-export function CommentItem({ comment }: CommentItemProps) {
+export const CommentItem = React.memo(function CommentItem({ comment }: CommentItemProps) {
   const router = useRouter();
   const { colors } = useThemeStore();
 
@@ -51,7 +51,7 @@ export function CommentItem({ comment }: CommentItemProps) {
       </View>
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {

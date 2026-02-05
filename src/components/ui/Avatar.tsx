@@ -52,7 +52,7 @@ function getColorFromName(name?: string): string {
   return colors[Math.abs(hash) % colors.length];
 }
 
-export function Avatar({ uri, name, size = 'medium', style }: AvatarProps) {
+export const Avatar = React.memo(function Avatar({ uri, name, size = 'medium', style }: AvatarProps) {
   const { colors } = useThemeStore();
   const dimension = SIZES[size];
   const fontSize = FONT_SIZES[size];
@@ -92,7 +92,7 @@ export function Avatar({ uri, name, size = 'medium', style }: AvatarProps) {
       </Text>
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   image: {

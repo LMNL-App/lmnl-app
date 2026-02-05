@@ -30,7 +30,7 @@ interface PostCardProps {
   onCommentPress?: () => void;
 }
 
-export function PostCard({ post, onCommentPress }: PostCardProps) {
+export const PostCard = React.memo(function PostCard({ post, onCommentPress }: PostCardProps) {
   const router = useRouter();
   const { colors } = useThemeStore();
   const { likePost, unlikePost, savePost, unsavePost } = useFeedStore();
@@ -205,7 +205,7 @@ export function PostCard({ post, onCommentPress }: PostCardProps) {
       />
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {

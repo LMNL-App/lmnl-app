@@ -27,7 +27,7 @@ function StatItem({ value, label, color }: StatItemProps) {
   );
 }
 
-export function ActivityDashboard() {
+export const ActivityDashboard = React.memo(function ActivityDashboard() {
   const { colors } = useThemeStore();
   const { postsRemaining, likesRemaining, commentsRemaining } = useUsageStore();
 
@@ -56,7 +56,7 @@ export function ActivityDashboard() {
       </View>
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {
