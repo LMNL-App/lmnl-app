@@ -21,6 +21,7 @@ import { supabase } from '../../src/lib/supabase';
 import { Avatar } from '../../src/components/ui';
 import { formatNotificationTime } from '../../src/utils/dateUtils';
 import { Typography, Spacing } from '../../src/constants/theme';
+import { useNotificationSubscription } from '../../src/hooks/useRealtimeSubscription';
 import type { NotificationWithActor, Profile } from '../../src/types/database';
 
 interface NotificationItem {
@@ -73,6 +74,11 @@ export default function NotificationsScreen() {
       setIsRefreshing(false);
     }
   };
+
+  // Subscribe to real-time notifications
+  useNotificationSubscription(() => {
+    fetchNotifications();
+  });
 
   useEffect(() => {
     fetchNotifications();
