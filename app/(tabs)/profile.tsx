@@ -128,22 +128,32 @@ export default function ProfileScreen() {
           Posts
         </Text>
       </View>
-      <View style={styles.statItem}>
+      <TouchableOpacity
+        style={styles.statItem}
+        onPress={() => router.push(`/profile/followers?userId=${user?.id}&username=${profile?.username}`)}
+        accessibilityRole="button"
+        accessibilityLabel={`${stats?.followers_count || 0} followers`}
+      >
         <Text style={[styles.statValue, { color: colors.text }]}>
           {stats?.followers_count || 0}
         </Text>
         <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
           Followers
         </Text>
-      </View>
-      <View style={styles.statItem}>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.statItem}
+        onPress={() => router.push(`/profile/following?userId=${user?.id}&username=${profile?.username}`)}
+        accessibilityRole="button"
+        accessibilityLabel={`${stats?.following_count || 0} following`}
+      >
         <Text style={[styles.statValue, { color: colors.text }]}>
           {stats?.following_count || 0}
         </Text>
         <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
           Following
         </Text>
-      </View>
+      </TouchableOpacity>
     </View>
   );
 
