@@ -10,12 +10,16 @@ import {
   Image,
   TouchableOpacity,
   Dimensions,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useThemeStore } from '../../stores/themeStore';
 import { useFeedStore } from '../../stores/feedStore';
 import { useUsageStore } from '../../stores/usageStore';
+import { useAuthStore } from '../../stores/authStore';
+import { supabase } from '../../lib/supabase';
+import { deletePostImage } from '../../lib/storage';
 import { Avatar } from '../ui';
 import { LimitReachedModal, type LimitType } from '../common';
 import { formatTimestamp } from '../../utils/dateUtils';
@@ -28,17 +32,21 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 interface PostCardProps {
   post: FeedPost;
   onCommentPress?: () => void;
+  onDeleted?: (postId: string) => void;
 }
 
-export const PostCard = React.memo(function PostCard({ post, onCommentPress }: PostCardProps) {
+export const PostCard = React.memo(function PostCard({ post, onCommentPress, onDeleted }: PostCardProps) {
   const router = useRouter();
   const { colors } = useThemeStore();
-  const { likePost, unlikePost, savePost, unsavePost } = useFeedStore();
+  const { likePost, unlikePost, savePost, unsavePost, removePost } = useFeedStore();
   const { canLike, incrementLikes, decrementLikes, fetchUsage } = useUsageStore();
+  const { user } = useAuthStore();
   const [isLiking, setIsLiking] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [limitModalVisible, setLimitModalVisible] = useState(false);
   const [limitModalType, setLimitModalType] = useState<LimitType>('likes');
+
+  const isOwnPost = user?.id === post.user_id;
 
   const showLimitModal = (type: LimitType) => {
     setLimitModalType(type);
@@ -116,20 +124,67 @@ export const PostCard = React.memo(function PostCard({ post, onCommentPress }: P
     router.push(`/post/${post.id}`);
   };
 
+  const handleDelete = () => {
+    Alert.alert(
+      'Delete Post',
+      'Are you sure you want to delete this post? This cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              // Delete post image from storage if exists
+              if (post.image_url) {
+                await deletePostImage(post.image_url).catch(() => {});
+              }
+
+              const { error } = await supabase
+                .from('posts')
+                .delete()
+                .eq('id', post.id);
+
+              if (error) throw error;
+
+              removePost(post.id);
+              onDeleted?.(post.id);
+            } catch (error) {
+              console.error('Error deleting post:', error);
+              Alert.alert('Error', 'Failed to delete post. Please try again.');
+            }
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <View style={[styles.container, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
       {/* Header */}
-      <TouchableOpacity style={styles.header} onPress={handleProfilePress}>
-        <Avatar uri={post.avatar_url} name={post.full_name} size="medium" />
-        <View style={styles.headerInfo}>
-          <Text style={[styles.username, { color: colors.text }]}>
-            {post.username}
-          </Text>
-          <Text style={[styles.timestamp, { color: colors.textTertiary }]}>
-            {formatTimestamp(post.created_at)}
-          </Text>
-        </View>
-      </TouchableOpacity>
+      <View style={styles.headerRow}>
+        <TouchableOpacity style={styles.header} onPress={handleProfilePress}>
+          <Avatar uri={post.avatar_url} name={post.full_name} size="medium" />
+          <View style={styles.headerInfo}>
+            <Text style={[styles.username, { color: colors.text }]}>
+              {post.username}
+            </Text>
+            <Text style={[styles.timestamp, { color: colors.textTertiary }]}>
+              {formatTimestamp(post.created_at)}
+            </Text>
+          </View>
+        </TouchableOpacity>
+        {isOwnPost && (
+          <TouchableOpacity
+            onPress={handleDelete}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            accessibilityRole="button"
+            accessibilityLabel="Delete post"
+          >
+            <Ionicons name="ellipsis-horizontal" size={20} color={colors.textTertiary} />
+          </TouchableOpacity>
+        )}
+      </View>
 
       {/* Content - Tappable to open post */}
       <TouchableOpacity onPress={handlePostPress} activeOpacity={0.9}>
@@ -212,11 +267,16 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.lg,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
-  header: {
+  headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: Spacing.base,
     marginBottom: Spacing.md,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
   },
   headerInfo: {
     marginLeft: Spacing.md,
