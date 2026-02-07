@@ -17,6 +17,7 @@ import { useThemeStore } from '../../../src/stores/themeStore';
 import { supabase } from '../../../src/lib/supabase';
 import { CommentItem, CommentInput } from '../../../src/components/feed';
 import { Typography, Spacing } from '../../../src/constants/theme';
+import { usePostInteractionSubscription } from '../../../src/hooks/useRealtimeSubscription';
 import type { Comment } from '../../../src/types/database';
 
 export default function CommentsScreen() {
@@ -78,6 +79,17 @@ export default function CommentsScreen() {
       setIsRefreshing(false);
     }
   }, [postId]);
+
+  // Subscribe to real-time comment updates
+  usePostInteractionSubscription(
+    postId || '',
+    (newInteraction) => {
+      if (newInteraction.type === 'comment') {
+        fetchComments();
+      }
+    },
+    () => {}
+  );
 
   useEffect(() => {
     fetchComments();

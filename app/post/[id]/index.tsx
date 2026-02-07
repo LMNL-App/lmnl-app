@@ -27,6 +27,7 @@ import { LimitReachedModal, type LimitType } from '../../../src/components/commo
 import { formatTimestamp } from '../../../src/utils/dateUtils';
 import { isLimitError } from '../../../src/constants/limits';
 import { Typography, Spacing } from '../../../src/constants/theme';
+import { usePostInteractionSubscription } from '../../../src/hooks/useRealtimeSubscription';
 import type { FeedPost, Comment } from '../../../src/types/database';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -175,6 +176,23 @@ export default function PostDetailScreen() {
       setIsRefreshing(false);
     }
   }, [postId]);
+
+  // Subscribe to real-time interaction changes
+  usePostInteractionSubscription(
+    postId || '',
+    (newInteraction) => {
+      if (newInteraction.type === 'comment') {
+        fetchComments();
+      } else if (newInteraction.type === 'like' && post) {
+        setPost({ ...post, likes_count: post.likes_count + 1 });
+      }
+    },
+    (deletedInteraction) => {
+      if (deletedInteraction.type === 'like' && post) {
+        setPost({ ...post, likes_count: Math.max(0, post.likes_count - 1) });
+      }
+    }
+  );
 
   useEffect(() => {
     fetchPost();
