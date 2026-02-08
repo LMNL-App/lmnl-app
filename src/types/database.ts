@@ -21,6 +21,7 @@ export interface Profile {
   timezone: string;
   theme_preference: ThemePreference;
   notifications_enabled: boolean;
+  is_private: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -134,6 +135,20 @@ export interface SponsoredPost {
   clicks: number;
   start_date: string;
   end_date: string;
+  created_at: string;
+}
+
+export interface BlockedUser {
+  id: string;
+  user_id: string;
+  blocked_user_id: string;
+  created_at: string;
+}
+
+export interface MutedUser {
+  id: string;
+  user_id: string;
+  muted_user_id: string;
   created_at: string;
 }
 
