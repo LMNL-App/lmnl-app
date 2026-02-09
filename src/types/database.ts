@@ -21,6 +21,10 @@ export interface Profile {
   timezone: string;
   theme_preference: ThemePreference;
   notifications_enabled: boolean;
+  notify_likes: boolean;
+  notify_comments: boolean;
+  notify_follows: boolean;
+  notify_mentions: boolean;
   is_private: boolean;
   created_at: string;
   updated_at: string;
