@@ -208,6 +208,9 @@ export const PostCard = React.memo(function PostCard({ post, onCommentPress, onD
           style={styles.actionButton}
           onPress={handleLike}
           disabled={isLiking}
+          accessibilityRole="button"
+          accessibilityLabel={post.is_liked ? `Unlike post, ${post.likes_count} likes` : `Like post, ${post.likes_count} likes`}
+          accessibilityState={{ selected: post.is_liked }}
         >
           <Ionicons
             name={post.is_liked ? 'heart' : 'heart-outline'}
@@ -226,7 +229,12 @@ export const PostCard = React.memo(function PostCard({ post, onCommentPress, onD
           )}
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.actionButton} onPress={handleCommentPress}>
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={handleCommentPress}
+          accessibilityRole="button"
+          accessibilityLabel={`View comments, ${post.comments_count} comments`}
+        >
           <Ionicons
             name="chatbubble-outline"
             size={22}
@@ -243,6 +251,9 @@ export const PostCard = React.memo(function PostCard({ post, onCommentPress, onD
           style={styles.actionButton}
           onPress={handleSave}
           disabled={isSaving}
+          accessibilityRole="button"
+          accessibilityLabel={post.is_saved ? 'Unsave post' : 'Save post'}
+          accessibilityState={{ selected: post.is_saved }}
         >
           <Ionicons
             name={post.is_saved ? 'bookmark' : 'bookmark-outline'}

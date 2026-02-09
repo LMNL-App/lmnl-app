@@ -70,6 +70,8 @@ export const Avatar = React.memo(function Avatar({ uri, name, size = 'medium', s
           },
           style,
         ]}
+        accessibilityRole="image"
+        accessibilityLabel={name ? `${name}'s avatar` : 'User avatar'}
       />
     );
   }
