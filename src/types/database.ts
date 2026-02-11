@@ -36,6 +36,7 @@ export interface Post {
   content: string | null;
   image_url: string | null;
   is_sponsored: boolean;
+  is_edited: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -154,6 +155,22 @@ export interface MutedUser {
   user_id: string;
   muted_user_id: string;
   created_at: string;
+}
+
+export interface Hashtag {
+  id: string;
+  name: string;
+  posts_count: number;
+  created_at: string;
+}
+
+export interface Draft {
+  id: string;
+  user_id: string;
+  content: string | null;
+  image_url: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface PushToken {
