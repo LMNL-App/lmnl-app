@@ -180,6 +180,16 @@ export default function SettingsScreen() {
               onPress={() => router.push('/settings/change-password')}
             />
             <SettingItem
+              icon="analytics-outline"
+              label="Analytics"
+              onPress={() => router.push('/settings/analytics')}
+            />
+            <SettingItem
+              icon="download-outline"
+              label="Export Data"
+              onPress={() => router.push('/settings/data-export')}
+            />
+            <SettingItem
               icon="language-outline"
               label="Language"
               onPress={() => {}}
