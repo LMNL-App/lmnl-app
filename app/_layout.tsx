@@ -90,6 +90,8 @@ export default function RootLayout() {
   const { initialize: initAuth } = useAuthStore();
   const { initialize: initTheme, colorScheme, colors } = useThemeStore();
   const { fetchUsage } = useUsageStore();
+  const { isOnline } = useNetworkStatus();
+  const { setOnline, loadQueue } = useOfflineStore();
 
   useEffect(() => {
     async function init() {
@@ -113,17 +115,6 @@ export default function RootLayout() {
     init();
   }, []);
 
-  if (!isReady) {
-    return (
-      <View style={[styles.loading, { backgroundColor: '#F7F5F2' }]}>
-        <ActivityIndicator size="large" color="#1A1A1A" />
-      </View>
-    );
-  }
-
-  const { isOnline } = useNetworkStatus();
-  const { setOnline, loadQueue } = useOfflineStore();
-
   useEffect(() => {
     loadQueue();
   }, []);
@@ -131,6 +122,14 @@ export default function RootLayout() {
   useEffect(() => {
     setOnline(isOnline);
   }, [isOnline]);
+
+  if (!isReady) {
+    return (
+      <View style={[styles.loading, { backgroundColor: '#F7F5F2' }]}>
+        <ActivityIndicator size="large" color="#1A1A1A" />
+      </View>
+    );
+  }
 
   return (
     <ErrorBoundary>
