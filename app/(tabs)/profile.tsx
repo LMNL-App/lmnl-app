@@ -31,7 +31,7 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 const GAP = 2;
 const NUM_COLUMNS = 3;
 // Calculate grid size: available width minus gaps, divided by columns
-const GRID_SIZE = (SCREEN_WIDTH - Spacing.base * 2 - GAP * (NUM_COLUMNS - 1)) / NUM_COLUMNS;
+const GRID_SIZE = Math.floor((SCREEN_WIDTH - Spacing.base * 2 - GAP * (NUM_COLUMNS - 1)) / NUM_COLUMNS);
 
 export default function ProfileScreen() {
   const router = useRouter();
