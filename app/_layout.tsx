@@ -69,6 +69,12 @@ function InitialLayout() {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="hashtag"
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack>
   );
 }
