@@ -193,7 +193,7 @@ export default function SettingsScreen() {
             <SettingItem
               icon="language-outline"
               label="Language"
-              onPress={() => {}}
+              onPress={() => router.push('/settings/language')}
             />
             <SettingItem
               icon="trash-outline"

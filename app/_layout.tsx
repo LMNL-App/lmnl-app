@@ -13,6 +13,8 @@ import { useToastStore } from '../src/stores/toastStore';
 import { useOfflineStore } from '../src/stores/offlineStore';
 import { ErrorBoundary, Toast, OfflineBanner } from '../src/components/common';
 import { useNetworkStatus } from '../src/hooks/useNetworkStatus';
+import '../src/i18n';
+import { loadSavedLanguage } from '../src/i18n';
 
 function InitialLayout() {
   const router = useRouter();
@@ -96,8 +98,9 @@ export default function RootLayout() {
   useEffect(() => {
     async function init() {
       try {
-        // Initialize theme first for immediate visual
+        // Initialize theme and language first for immediate visual
         await initTheme();
+        await loadSavedLanguage();
         // Then initialize auth
         await initAuth();
         // Fetch usage if logged in
