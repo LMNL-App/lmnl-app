@@ -9,6 +9,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -212,7 +213,7 @@ export default function SettingsScreen() {
             <SettingItem
               icon="help-circle-outline"
               label="Help & Support"
-              onPress={() => {}}
+              onPress={() => Linking.openURL('https://lmnlapp.com')}
             />
             <SettingItem
               icon="information-circle-outline"
