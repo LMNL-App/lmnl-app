@@ -127,6 +127,7 @@ export default function CreatePostScreen() {
       if (data && profile) {
         addPost({
           ...data,
+          is_edited: false,
           full_name: profile.full_name,
           username: profile.username,
           avatar_url: profile.avatar_url,

@@ -11,6 +11,9 @@ import {
   TouchableOpacity,
   Dimensions,
   Alert,
+  Modal,
+  TextInput,
+  ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -24,6 +27,7 @@ import { Avatar } from '../ui';
 import { LimitReachedModal, type LimitType } from '../common';
 import { formatTimestamp } from '../../utils/dateUtils';
 import { isLimitError } from '../../constants/limits';
+import { APP_CONFIG } from '../../constants/config';
 import { Typography, Spacing, BorderRadius } from '../../constants/theme';
 import type { FeedPost } from '../../types/database';
 
@@ -33,18 +37,22 @@ interface PostCardProps {
   post: FeedPost;
   onCommentPress?: () => void;
   onDeleted?: (postId: string) => void;
+  onEdited?: (postId: string, newContent: string) => void;
 }
 
-export const PostCard = React.memo(function PostCard({ post, onCommentPress, onDeleted }: PostCardProps) {
+export const PostCard = React.memo(function PostCard({ post, onCommentPress, onDeleted, onEdited }: PostCardProps) {
   const router = useRouter();
   const { colors } = useThemeStore();
-  const { likePost, unlikePost, savePost, unsavePost, removePost } = useFeedStore();
+  const { likePost, unlikePost, savePost, unsavePost, removePost, updatePostContent } = useFeedStore();
   const { canLike, incrementLikes, decrementLikes, fetchUsage } = useUsageStore();
   const { user } = useAuthStore();
   const [isLiking, setIsLiking] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [limitModalVisible, setLimitModalVisible] = useState(false);
   const [limitModalType, setLimitModalType] = useState<LimitType>('likes');
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [editContent, setEditContent] = useState(post.content || '');
+  const [isEditing, setIsEditing] = useState(false);
 
   const isOwnPost = user?.id === post.user_id;
 
@@ -124,6 +132,28 @@ export const PostCard = React.memo(function PostCard({ post, onCommentPress, onD
     router.push(`/post/${post.id}`);
   };
 
+  const handlePostMenu = () => {
+    Alert.alert(
+      undefined as any,
+      undefined as any,
+      [
+        {
+          text: 'Edit Post',
+          onPress: () => {
+            setEditContent(post.content || '');
+            setEditModalVisible(true);
+          },
+        },
+        {
+          text: 'Delete Post',
+          style: 'destructive',
+          onPress: () => handleDelete(),
+        },
+        { text: 'Cancel', style: 'cancel' },
+      ]
+    );
+  };
+
   const handleDelete = () => {
     Alert.alert(
       'Delete Post',
@@ -135,7 +165,6 @@ export const PostCard = React.memo(function PostCard({ post, onCommentPress, onD
           style: 'destructive',
           onPress: async () => {
             try {
-              // Delete post image from storage if exists
               if (post.image_url) {
                 await deletePostImage(post.image_url).catch(() => {});
               }
@@ -159,6 +188,32 @@ export const PostCard = React.memo(function PostCard({ post, onCommentPress, onD
     );
   };
 
+  const handleEditSubmit = async () => {
+    if (!editContent.trim() && !post.image_url) return;
+    setIsEditing(true);
+    try {
+      const { error } = await supabase
+        .from('posts')
+        .update({
+          content: editContent.trim() || null,
+          is_edited: true,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', post.id);
+
+      if (error) throw error;
+
+      updatePostContent(post.id, editContent.trim() || null);
+      onEdited?.(post.id, editContent.trim());
+      setEditModalVisible(false);
+    } catch (error) {
+      console.error('Error editing post:', error);
+      Alert.alert('Error', 'Failed to update post. Please try again.');
+    } finally {
+      setIsEditing(false);
+    }
+  };
+
   return (
     <View style={[styles.container, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
       {/* Header */}
@@ -169,17 +224,24 @@ export const PostCard = React.memo(function PostCard({ post, onCommentPress, onD
             <Text style={[styles.username, { color: colors.text }]}>
               {post.username}
             </Text>
-            <Text style={[styles.timestamp, { color: colors.textTertiary }]}>
-              {formatTimestamp(post.created_at)}
-            </Text>
+            <View style={styles.timestampRow}>
+              <Text style={[styles.timestamp, { color: colors.textTertiary }]}>
+                {formatTimestamp(post.created_at)}
+              </Text>
+              {(post as any).is_edited && (
+                <Text style={[styles.editedLabel, { color: colors.textTertiary }]}>
+                  {' \u00b7 edited'}
+                </Text>
+              )}
+            </View>
           </View>
         </TouchableOpacity>
         {isOwnPost && (
           <TouchableOpacity
-            onPress={handleDelete}
+            onPress={handlePostMenu}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             accessibilityRole="button"
-            accessibilityLabel="Delete post"
+            accessibilityLabel="Post options"
           >
             <Ionicons name="ellipsis-horizontal" size={20} color={colors.textTertiary} />
           </TouchableOpacity>
@@ -263,6 +325,43 @@ export const PostCard = React.memo(function PostCard({ post, onCommentPress, onD
         </TouchableOpacity>
       </View>
 
+      {/* Edit Post Modal */}
+      <Modal
+        visible={editModalVisible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setEditModalVisible(false)}
+      >
+        <View style={[styles.editModalContainer, { backgroundColor: colors.background }]}>
+          <View style={[styles.editModalHeader, { borderBottomColor: colors.border }]}>
+            <TouchableOpacity onPress={() => setEditModalVisible(false)}>
+              <Text style={[styles.editModalCancel, { color: colors.textSecondary }]}>Cancel</Text>
+            </TouchableOpacity>
+            <Text style={[styles.editModalTitle, { color: colors.text }]}>Edit Post</Text>
+            <TouchableOpacity onPress={handleEditSubmit} disabled={isEditing}>
+              {isEditing ? (
+                <ActivityIndicator size="small" color={colors.primary} />
+              ) : (
+                <Text style={[styles.editModalSave, { color: colors.primary }]}>Save</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+          <TextInput
+            style={[styles.editModalInput, { color: colors.text }]}
+            value={editContent}
+            onChangeText={setEditContent}
+            multiline
+            maxLength={APP_CONFIG.maxChars.post}
+            autoFocus
+            placeholderTextColor={colors.placeholder}
+            placeholder="Write something..."
+          />
+          <Text style={[styles.editModalCharCount, { color: colors.textTertiary }]}>
+            {editContent.length}/{APP_CONFIG.maxChars.post}
+          </Text>
+        </View>
+      </Modal>
+
       {/* Limit Reached Modal */}
       <LimitReachedModal
         visible={limitModalVisible}
@@ -326,5 +425,46 @@ const styles = StyleSheet.create({
     fontSize: Typography.sizes.sm,
     marginLeft: Spacing.xs,
     fontWeight: Typography.weights.medium,
+  },
+  timestampRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  editedLabel: {
+    fontSize: Typography.sizes.xs,
+  },
+  editModalContainer: {
+    flex: 1,
+  },
+  editModalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: Spacing.base,
+    paddingVertical: Spacing.md,
+    borderBottomWidth: 1,
+  },
+  editModalTitle: {
+    fontSize: Typography.sizes.lg,
+    fontWeight: Typography.weights.semibold,
+  },
+  editModalCancel: {
+    fontSize: Typography.sizes.base,
+  },
+  editModalSave: {
+    fontSize: Typography.sizes.base,
+    fontWeight: Typography.weights.semibold,
+  },
+  editModalInput: {
+    flex: 1,
+    fontSize: Typography.sizes.lg,
+    lineHeight: Typography.sizes.lg * Typography.lineHeights.relaxed,
+    padding: Spacing.base,
+    textAlignVertical: 'top',
+  },
+  editModalCharCount: {
+    textAlign: 'right',
+    fontSize: Typography.sizes.sm,
+    padding: Spacing.base,
   },
 });

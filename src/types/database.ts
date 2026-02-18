@@ -54,6 +54,7 @@ export interface FeedPost {
   content: string | null;
   image_url: string | null;
   is_sponsored: boolean;
+  is_edited: boolean;
   created_at: string;
   updated_at: string;
   full_name: string;

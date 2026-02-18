@@ -24,6 +24,7 @@ interface FeedState {
   unsavePost: (postId: string) => Promise<void>;
   addPost: (post: FeedPost) => void;
   removePost: (postId: string) => void;
+  updatePostContent: (postId: string, content: string | null) => void;
   clearFeed: () => void;
   invalidateCache: () => void;
   updatePostsForUser: (userId: string, updates: { username?: string; full_name?: string; avatar_url?: string | null }) => void;
@@ -313,6 +314,14 @@ export const useFeedStore = create<FeedState>((set, get) => ({
   removePost: (postId) => {
     set((state) => ({
       posts: state.posts.filter(p => p.id !== postId),
+    }));
+  },
+
+  updatePostContent: (postId, content) => {
+    set((state) => ({
+      posts: state.posts.map(p =>
+        p.id === postId ? { ...p, content, is_edited: true } as FeedPost : p
+      ),
     }));
   },
 

@@ -62,6 +62,7 @@ export default function PostDetailScreen() {
           content,
           image_url,
           is_sponsored,
+          is_edited,
           created_at,
           updated_at,
           profiles:user_id (
@@ -112,6 +113,7 @@ export default function PostDetailScreen() {
         content: data.content,
         image_url: data.image_url,
         is_sponsored: data.is_sponsored,
+        is_edited: (data as any).is_edited || false,
         created_at: data.created_at,
         updated_at: data.updated_at,
         full_name: (data.profiles as any).full_name,
