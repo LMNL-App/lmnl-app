@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { useThemeStore } from '../../src/stores/themeStore';
 import { useAuthStore } from '../../src/stores/authStore';
@@ -33,14 +33,16 @@ import { Typography, Spacing, BorderRadius } from '../../src/constants/theme';
 
 export default function CreatePostScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ draftId?: string; draftContent?: string; draftImageUrl?: string }>();
   const { colors } = useThemeStore();
   const { profile, user } = useAuthStore();
   const { postsRemaining, canPost, incrementPosts, fetchUsage } = useUsageStore();
   const { addPost } = useFeedStore();
 
-  const [content, setContent] = useState('');
-  const [imageUri, setImageUri] = useState<string | null>(null);
+  const [content, setContent] = useState(params.draftContent || '');
+  const [imageUri, setImageUri] = useState<string | null>(params.draftImageUrl || null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [draftId, setDraftId] = useState<string | null>(params.draftId || null);
 
   const postLimit = profile ? getPostLimit(profile.role, profile.is_verified) : 5;
   const canCreatePost = canPost(profile?.role || 'student', profile?.is_verified || false);
@@ -111,6 +113,12 @@ export default function CreatePostScreen() {
         .single();
 
       if (error) throw error;
+
+      // Delete draft if we were restoring one
+      if (draftId) {
+        await supabase.from('drafts').delete().eq('id', draftId);
+        setDraftId(null);
+      }
 
       // Update local state
       incrementPosts();

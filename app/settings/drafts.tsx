@@ -79,8 +79,14 @@ export default function DraftsScreen() {
     <TouchableOpacity
       style={[styles.draftItem, { backgroundColor: colors.surface, borderColor: colors.border }]}
       onPress={() => {
-        // Could navigate to create screen with draft pre-loaded
-        Alert.alert('Draft', item.content || 'Image-only draft');
+        router.push({
+          pathname: '/(tabs)/create',
+          params: {
+            draftId: item.id,
+            draftContent: item.content || '',
+            draftImageUrl: item.image_url || '',
+          },
+        });
       }}
       accessibilityRole="button"
       accessibilityLabel={`Draft: ${item.content?.slice(0, 50) || 'Image draft'}`}
