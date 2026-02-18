@@ -1,6 +1,6 @@
 /**
  * Search Screen
- * Search for users and hashtags
+ * Advanced search with tabs for Users, Posts, and Hashtags
  */
 import { useState, useEffect, useCallback } from 'react';
 import {
@@ -11,6 +11,8 @@ import {
   FlatList,
   TouchableOpacity,
   ActivityIndicator,
+  Image,
+  Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -21,25 +23,43 @@ import { supabase } from '../../src/lib/supabase';
 import { Avatar, Button } from '../../src/components/ui';
 import { STORAGE_KEYS } from '../../src/constants/config';
 import { Typography, Spacing, BorderRadius } from '../../src/constants/theme';
+import { formatTimestamp } from '../../src/utils/dateUtils';
 import type { Profile, Hashtag } from '../../src/types/database';
+
+type SearchTab = 'users' | 'posts' | 'hashtags';
 
 interface SearchResult extends Profile {
   is_following?: boolean;
 }
 
+interface PostResult {
+  id: string;
+  content: string | null;
+  image_url: string | null;
+  created_at: string;
+  user_id: string;
+  username: string;
+  full_name: string;
+  avatar_url: string | null;
+}
+
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const GRID_GAP = 2;
+const GRID_ITEM_SIZE = (SCREEN_WIDTH - GRID_GAP * 2) / 3;
+
 export default function SearchScreen() {
   const router = useRouter();
   const { colors } = useThemeStore();
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<SearchResult[]>([]);
+  const [activeTab, setActiveTab] = useState<SearchTab>('users');
+  const [userResults, setUserResults] = useState<SearchResult[]>([]);
+  const [postResults, setPostResults] = useState<PostResult[]>([]);
   const [hashtagResults, setHashtagResults] = useState<Hashtag[]>([]);
   const [trendingHashtags, setTrendingHashtags] = useState<Hashtag[]>([]);
   const [recentSearches, setRecentSearches] = useState<SearchResult[]>([]);
   const [suggestions, setSuggestions] = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [followingIds, setFollowingIds] = useState<Set<string>>(new Set());
-
-  const isHashtagSearch = query.startsWith('#');
 
   useEffect(() => {
     loadRecentSearches();
@@ -110,43 +130,80 @@ export default function SearchScreen() {
     }
   };
 
+  const searchUsers = async (searchQuery: string) => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .or(`username.ilike.%${searchQuery}%,full_name.ilike.%${searchQuery}%`)
+      .limit(20);
+
+    if (error) throw error;
+    setUserResults(data || []);
+  };
+
+  const searchPosts = async (searchQuery: string) => {
+    const { data, error } = await supabase
+      .from('posts')
+      .select(`
+        id,
+        content,
+        image_url,
+        created_at,
+        user_id,
+        profiles:user_id (
+          username,
+          full_name,
+          avatar_url
+        )
+      `)
+      .ilike('content', `%${searchQuery}%`)
+      .order('created_at', { ascending: false })
+      .limit(30);
+
+    if (error) throw error;
+
+    const results: PostResult[] = (data || []).map((post: any) => ({
+      id: post.id,
+      content: post.content,
+      image_url: post.image_url,
+      created_at: post.created_at,
+      user_id: post.user_id,
+      username: post.profiles.username,
+      full_name: post.profiles.full_name,
+      avatar_url: post.profiles.avatar_url,
+    }));
+
+    setPostResults(results);
+  };
+
+  const searchHashtags = async (searchQuery: string) => {
+    const cleanQuery = searchQuery.startsWith('#') ? searchQuery.slice(1) : searchQuery;
+    const { data, error } = await supabase
+      .from('hashtags')
+      .select('*')
+      .ilike('name', `%${cleanQuery}%`)
+      .order('posts_count', { ascending: false })
+      .limit(20);
+
+    if (error) throw error;
+    setHashtagResults(data || []);
+  };
+
   const handleSearch = useCallback(async (searchQuery: string) => {
     if (!searchQuery.trim()) {
-      setResults([]);
+      setUserResults([]);
+      setPostResults([]);
       setHashtagResults([]);
       return;
     }
 
     setIsSearching(true);
     try {
-      if (searchQuery.startsWith('#')) {
-        const hashtagQuery = searchQuery.slice(1).toLowerCase();
-        if (!hashtagQuery) {
-          setHashtagResults([]);
-          setIsSearching(false);
-          return;
-        }
-        const { data, error } = await supabase
-          .from('hashtags')
-          .select('*')
-          .ilike('name', `%${hashtagQuery}%`)
-          .order('posts_count', { ascending: false })
-          .limit(20);
-
-        if (error) throw error;
-        setHashtagResults(data || []);
-        setResults([]);
-      } else {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .or(`username.ilike.%${searchQuery}%,full_name.ilike.%${searchQuery}%`)
-          .limit(20);
-
-        if (error) throw error;
-        setResults(data || []);
-        setHashtagResults([]);
-      }
+      await Promise.all([
+        searchUsers(searchQuery),
+        searchPosts(searchQuery),
+        searchHashtags(searchQuery),
+      ]);
     } catch (error) {
       console.error('Search error:', error);
     } finally {
@@ -256,6 +313,35 @@ export default function SearchScreen() {
     );
   };
 
+  const renderPostItem = ({ item }: { item: PostResult }) => (
+    <TouchableOpacity
+      style={[styles.postItem, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}
+      onPress={() => router.push(`/post/${item.id}`)}
+    >
+      <View style={styles.postHeader}>
+        <Avatar uri={item.avatar_url} name={item.full_name} size="small" />
+        <View style={styles.postHeaderInfo}>
+          <Text style={[styles.postUsername, { color: colors.text }]}>{item.username}</Text>
+          <Text style={[styles.postTime, { color: colors.textTertiary }]}>
+            {formatTimestamp(item.created_at)}
+          </Text>
+        </View>
+      </View>
+      {item.content && (
+        <Text style={[styles.postContent, { color: colors.text }]} numberOfLines={3}>
+          {item.content}
+        </Text>
+      )}
+      {item.image_url && (
+        <Image
+          source={{ uri: item.image_url }}
+          style={styles.postThumbnail}
+          resizeMode="cover"
+        />
+      )}
+    </TouchableOpacity>
+  );
+
   const renderHashtagItem = ({ item }: { item: Hashtag }) => (
     <TouchableOpacity
       style={styles.userItem}
@@ -295,6 +381,67 @@ export default function SearchScreen() {
     </TouchableOpacity>
   );
 
+  const tabs: { key: SearchTab; label: string; count: number }[] = [
+    { key: 'users', label: 'Users', count: userResults.length },
+    { key: 'posts', label: 'Posts', count: postResults.length },
+    { key: 'hashtags', label: 'Hashtags', count: hashtagResults.length },
+  ];
+
+  const renderSearchResults = () => {
+    if (isSearching) {
+      return (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View>
+      );
+    }
+
+    switch (activeTab) {
+      case 'users':
+        return (
+          <FlatList
+            data={userResults}
+            renderItem={renderUserItem}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={styles.list}
+            ListEmptyComponent={
+              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+                No users found
+              </Text>
+            }
+          />
+        );
+      case 'posts':
+        return (
+          <FlatList
+            data={postResults}
+            renderItem={renderPostItem}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={styles.list}
+            ListEmptyComponent={
+              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+                No posts found
+              </Text>
+            }
+          />
+        );
+      case 'hashtags':
+        return (
+          <FlatList
+            data={hashtagResults}
+            renderItem={renderHashtagItem}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={styles.list}
+            ListEmptyComponent={
+              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+                No hashtags found
+              </Text>
+            }
+          />
+        );
+    }
+  };
+
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: colors.background }]}
@@ -307,7 +454,7 @@ export default function SearchScreen() {
           <TextInput
             value={query}
             onChangeText={setQuery}
-            placeholder="Search users or #hashtags"
+            placeholder="Search users, posts, or #hashtags"
             placeholderTextColor={colors.placeholder}
             style={[styles.input, { color: colors.text }]}
             autoCapitalize="none"
@@ -321,36 +468,40 @@ export default function SearchScreen() {
         </View>
       </View>
 
-      {isSearching ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors.primary} />
+      {query.length > 0 ? (
+        <View style={{ flex: 1 }}>
+          {/* Search Tabs */}
+          <View style={[styles.tabBar, { borderBottomColor: colors.border }]}>
+            {tabs.map((tab) => (
+              <TouchableOpacity
+                key={tab.key}
+                style={[
+                  styles.tab,
+                  activeTab === tab.key && { borderBottomColor: colors.primary, borderBottomWidth: 2 },
+                ]}
+                onPress={() => setActiveTab(tab.key)}
+              >
+                <Text
+                  style={[
+                    styles.tabLabel,
+                    { color: activeTab === tab.key ? colors.text : colors.textTertiary },
+                  ]}
+                >
+                  {tab.label}
+                </Text>
+                {tab.count > 0 && (
+                  <View style={[styles.tabBadge, { backgroundColor: colors.backgroundSecondary }]}>
+                    <Text style={[styles.tabBadgeText, { color: colors.textSecondary }]}>
+                      {tab.count}
+                    </Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          {renderSearchResults()}
         </View>
-      ) : query.length > 0 ? (
-        isHashtagSearch ? (
-          <FlatList
-            data={hashtagResults}
-            renderItem={renderHashtagItem}
-            keyExtractor={(item) => item.id}
-            contentContainerStyle={styles.list}
-            ListEmptyComponent={
-              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
-                No hashtags found
-              </Text>
-            }
-          />
-        ) : (
-          <FlatList
-            data={results}
-            renderItem={renderUserItem}
-            keyExtractor={(item) => item.id}
-            contentContainerStyle={styles.list}
-            ListEmptyComponent={
-              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
-                No users found
-              </Text>
-            }
-          />
-        )
       ) : (
         <FlatList
           data={[]}
@@ -427,6 +578,33 @@ const styles = StyleSheet.create({
     marginLeft: Spacing.sm,
     fontSize: Typography.sizes.base,
   },
+  tabBar: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    paddingHorizontal: Spacing.base,
+  },
+  tab: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: Spacing.md,
+    marginRight: Spacing.xl,
+    borderBottomWidth: 2,
+    borderBottomColor: 'transparent',
+  },
+  tabLabel: {
+    fontSize: Typography.sizes.sm,
+    fontWeight: Typography.weights.semibold,
+  },
+  tabBadge: {
+    marginLeft: Spacing.xs,
+    paddingHorizontal: 6,
+    paddingVertical: 1,
+    borderRadius: 10,
+  },
+  tabBadgeText: {
+    fontSize: Typography.sizes.xs,
+    fontWeight: Typography.weights.medium,
+  },
   list: {
     paddingHorizontal: Spacing.base,
   },
@@ -473,6 +651,37 @@ const styles = StyleSheet.create({
   hashtagIconText: {
     fontSize: Typography.sizes.xl,
     fontWeight: Typography.weights.bold,
+  },
+  postItem: {
+    paddingVertical: Spacing.md,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  postHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: Spacing.sm,
+  },
+  postHeaderInfo: {
+    marginLeft: Spacing.sm,
+    flex: 1,
+  },
+  postUsername: {
+    fontSize: Typography.sizes.sm,
+    fontWeight: Typography.weights.semibold,
+  },
+  postTime: {
+    fontSize: Typography.sizes.xs,
+  },
+  postContent: {
+    fontSize: Typography.sizes.base,
+    lineHeight: Typography.sizes.base * 1.4,
+  },
+  postThumbnail: {
+    width: '100%',
+    height: 160,
+    borderRadius: BorderRadius.md,
+    marginTop: Spacing.sm,
+    backgroundColor: '#E5E2DD',
   },
   loadingContainer: {
     flex: 1,
