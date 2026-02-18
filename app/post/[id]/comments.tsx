@@ -18,6 +18,7 @@ import { supabase } from '../../../src/lib/supabase';
 import { CommentItem, CommentInput } from '../../../src/components/feed';
 import { Typography, Spacing } from '../../../src/constants/theme';
 import { usePostInteractionSubscription } from '../../../src/hooks/useRealtimeSubscription';
+import { notifyMentionedUsers } from '../../../src/utils/mentions';
 import type { Comment } from '../../../src/types/database';
 
 export default function CommentsScreen() {
@@ -145,6 +146,9 @@ export default function CommentsScreen() {
         },
       };
       setComments(prev => [...prev, newComment]);
+
+      // Send mention notifications
+      notifyMentionedUsers(content, user.id, postId!);
     }
   };
 

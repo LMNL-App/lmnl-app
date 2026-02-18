@@ -26,8 +26,10 @@ import { supabase } from '../../src/lib/supabase';
 import { uploadPostImage } from '../../src/lib/storage';
 import { compressImage } from '../../src/utils/imageCompressor';
 import { validatePostContent } from '../../src/utils/validation';
+import { notifyMentionedUsers } from '../../src/utils/mentions';
 import { getPostLimit, isLimitError, parseLimitError } from '../../src/constants/limits';
 import { APP_CONFIG } from '../../src/constants/config';
+import { MentionSuggestions } from '../../src/components/common';
 import { Button } from '../../src/components/ui';
 import { Typography, Spacing, BorderRadius } from '../../src/constants/theme';
 
@@ -43,6 +45,8 @@ export default function CreatePostScreen() {
   const [imageUri, setImageUri] = useState<string | null>(params.draftImageUrl || null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [draftId, setDraftId] = useState<string | null>(params.draftId || null);
+  const [mentionQuery, setMentionQuery] = useState<string | null>(null);
+  const [cursorPosition, setCursorPosition] = useState(0);
 
   const postLimit = profile ? getPostLimit(profile.role, profile.is_verified) : 5;
   const canCreatePost = canPost(profile?.role || 'student', profile?.is_verified || false);
@@ -142,6 +146,11 @@ export default function CreatePostScreen() {
       setContent('');
       setImageUri(null);
 
+      // Notify mentioned users
+      if (data && content.includes('@')) {
+        notifyMentionedUsers(content.trim(), user!.id, data.id);
+      }
+
       Alert.alert('Success', 'Your post has been shared!', [
         { text: 'OK', onPress: () => router.back() },
       ]);
@@ -219,12 +228,34 @@ export default function CreatePostScreen() {
           </View>
         )}
 
+        {/* Mention Suggestions */}
+        <MentionSuggestions
+          query={mentionQuery || ''}
+          visible={mentionQuery !== null && mentionQuery.length > 0}
+          onSelect={(username) => {
+            const textUpToCursor = content.slice(0, cursorPosition);
+            const atIndex = textUpToCursor.lastIndexOf('@');
+            if (atIndex === -1) return;
+            const before = content.slice(0, atIndex);
+            const after = content.slice(cursorPosition);
+            setContent(`${before}@${username} ${after}`);
+            setMentionQuery(null);
+          }}
+        />
+
         {/* Caption Input */}
         <View style={styles.inputContainer}>
           <TextInput
             value={content}
             onChangeText={setContent}
-            placeholder="Share what mattered most today..."
+            onSelectionChange={(e) => {
+              const pos = e.nativeEvent.selection.end;
+              setCursorPosition(pos);
+              const textUpToCursor = content.slice(0, pos);
+              const match = textUpToCursor.match(/@(\w*)$/);
+              setMentionQuery(match ? match[1] : null);
+            }}
+            placeholder="Share what mattered most today... (use @ to mention)"
             placeholderTextColor={colors.placeholder}
             style={[styles.input, { color: colors.text }]}
             multiline

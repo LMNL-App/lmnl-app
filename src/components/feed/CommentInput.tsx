@@ -1,8 +1,8 @@
 /**
  * CommentInput component
- * Input field for adding comments with limit awareness
+ * Input field for adding comments with limit awareness and @mention support
  */
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   TextInput,
@@ -16,7 +16,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useThemeStore } from '../../stores/themeStore';
 import { useUsageStore } from '../../stores/usageStore';
-import { LimitReachedModal } from '../common';
+import { LimitReachedModal, MentionSuggestions } from '../common';
 import { isLimitError } from '../../constants/limits';
 import { APP_CONFIG } from '../../constants/config';
 import { Typography, Spacing, BorderRadius } from '../../constants/theme';
@@ -25,6 +25,12 @@ interface CommentInputProps {
   postId: string;
   onCommentSubmit: (content: string) => Promise<void>;
   onCommentAdded?: () => void;
+}
+
+function getMentionQuery(text: string, cursorPosition: number): string | null {
+  const textUpToCursor = text.slice(0, cursorPosition);
+  const match = textUpToCursor.match(/@(\w*)$/);
+  return match ? match[1] : null;
 }
 
 export function CommentInput({
@@ -38,14 +44,37 @@ export function CommentInput({
   const [text, setText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [limitModalVisible, setLimitModalVisible] = useState(false);
+  const [mentionQuery, setMentionQuery] = useState<string | null>(null);
+  const [cursorPosition, setCursorPosition] = useState(0);
 
   const maxLength = APP_CONFIG.maxChars.comment;
   const canSubmit = text.trim().length > 0 && !isSubmitting;
 
+  const handleTextChange = useCallback((newText: string) => {
+    setText(newText);
+  }, []);
+
+  const handleSelectionChange = useCallback((event: any) => {
+    const position = event.nativeEvent.selection.end;
+    setCursorPosition(position);
+    setMentionQuery(getMentionQuery(text, position));
+  }, [text]);
+
+  const handleMentionSelect = useCallback((username: string) => {
+    const textUpToCursor = text.slice(0, cursorPosition);
+    const atIndex = textUpToCursor.lastIndexOf('@');
+    if (atIndex === -1) return;
+
+    const before = text.slice(0, atIndex);
+    const after = text.slice(cursorPosition);
+    const newText = `${before}@${username} ${after}`;
+    setText(newText);
+    setMentionQuery(null);
+  }, [text, cursorPosition]);
+
   const handleSubmit = async () => {
     if (!canSubmit) return;
 
-    // Check limit before submitting
     if (!canComment()) {
       setLimitModalVisible(true);
       return;
@@ -57,11 +86,12 @@ export function CommentInput({
       await onCommentSubmit(text.trim());
       incrementComments();
       setText('');
+      setMentionQuery(null);
       onCommentAdded?.();
     } catch (error: any) {
       if (isLimitError(error.message)) {
         setLimitModalVisible(true);
-        fetchUsage(); // Refresh from server
+        fetchUsage();
       } else {
         console.error('Error submitting comment:', error);
       }
@@ -75,6 +105,12 @@ export function CommentInput({
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
     >
+      <MentionSuggestions
+        query={mentionQuery || ''}
+        visible={mentionQuery !== null && mentionQuery.length > 0}
+        onSelect={handleMentionSelect}
+      />
+
       <View style={[styles.container, { backgroundColor: colors.surface, borderTopColor: colors.border }]}>
         {/* Remaining comments indicator */}
         <View style={styles.limitIndicator}>
@@ -97,10 +133,11 @@ export function CommentInput({
                 borderColor: colors.inputBorder,
               },
             ]}
-            placeholder="Add a comment..."
+            placeholder="Add a comment... (use @ to mention)"
             placeholderTextColor={colors.placeholder}
             value={text}
-            onChangeText={setText}
+            onChangeText={handleTextChange}
+            onSelectionChange={handleSelectionChange}
             maxLength={maxLength}
             multiline
             editable={!isSubmitting && commentsRemaining > 0}

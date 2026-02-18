@@ -28,6 +28,7 @@ import { formatTimestamp } from '../../../src/utils/dateUtils';
 import { isLimitError } from '../../../src/constants/limits';
 import { Typography, Spacing } from '../../../src/constants/theme';
 import { usePostInteractionSubscription } from '../../../src/hooks/useRealtimeSubscription';
+import { notifyMentionedUsers } from '../../../src/utils/mentions';
 import type { FeedPost, Comment } from '../../../src/types/database';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -293,6 +294,9 @@ export default function PostDetailScreen() {
       if (post) {
         setPost({ ...post, comments_count: post.comments_count + 1 });
       }
+
+      // Send mention notifications
+      notifyMentionedUsers(content, user.id, postId!);
     }
   };
 
