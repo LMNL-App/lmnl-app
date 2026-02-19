@@ -12,6 +12,9 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { useThemeStore } from '../../src/stores/themeStore';
 import { useFeedStore } from '../../src/stores/feedStore';
 import { useUsageStore } from '../../src/stores/usageStore';
@@ -20,6 +23,7 @@ import { Typography, Spacing } from '../../src/constants/theme';
 import type { FeedPost } from '../../src/types/database';
 
 export default function FeedScreen() {
+  const router = useRouter();
   const { colors } = useThemeStore();
   const {
     posts,
@@ -130,6 +134,12 @@ export default function FeedScreen() {
       {/* Header */}
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
         <Text style={[styles.logo, { color: colors.text }]}>lmnl</Text>
+        <TouchableOpacity
+          onPress={() => router.push('/messages')}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Ionicons name="chatbubble-ellipses-outline" size={24} color={colors.text} />
+        </TouchableOpacity>
       </View>
 
       {/* Feed */}
@@ -166,10 +176,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
+    flexDirection: 'row',
     paddingHorizontal: Spacing.base,
     paddingVertical: Spacing.md,
     borderBottomWidth: 1,
     alignItems: 'center',
+    justifyContent: 'space-between',
   },
   logo: {
     fontSize: Typography.sizes.lg,

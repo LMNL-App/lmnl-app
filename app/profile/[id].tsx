@@ -19,6 +19,7 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useThemeStore } from '../../src/stores/themeStore';
 import { useAuthStore } from '../../src/stores/authStore';
+import { useMessageStore } from '../../src/stores/messageStore';
 import { supabase } from '../../src/lib/supabase';
 import { Avatar, Button } from '../../src/components/ui';
 import { APP_CONFIG } from '../../src/constants/config';
@@ -44,6 +45,7 @@ export default function UserProfileScreen() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
   const [isFollowLoading, setIsFollowLoading] = useState(false);
+  const { getOrCreateConversation } = useMessageStore();
 
   // If viewing own profile, redirect to tabs/profile
   useEffect(() => {
@@ -351,6 +353,18 @@ export default function UserProfileScreen() {
               variant={isFollowing ? 'secondary' : 'primary'}
               onPress={handleFollow}
               loading={isFollowLoading}
+              style={styles.actionButton}
+            />
+            <Button
+              title="Message"
+              variant="secondary"
+              onPress={async () => {
+                if (!userId) return;
+                const conversationId = await getOrCreateConversation(userId);
+                if (conversationId) {
+                  router.push(`/messages/${conversationId}?name=${encodeURIComponent(profile?.full_name || '')}&avatar=${encodeURIComponent(profile?.avatar_url || '')}`);
+                }
+              }}
               style={styles.actionButton}
             />
             <Button

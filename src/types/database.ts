@@ -204,6 +204,35 @@ export interface LimitError {
   message: string;
 }
 
+// Direct Messaging types
+export interface Conversation {
+  id: string;
+  participant1_id: string;
+  participant2_id: string;
+  last_message: string | null;
+  last_message_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ConversationWithParticipant extends Conversation {
+  participant: Profile;
+  unread_count: number;
+}
+
+export interface Message {
+  id: string;
+  conversation_id: string;
+  sender_id: string;
+  content: string;
+  is_read: boolean;
+  created_at: string;
+}
+
+export interface MessageWithSender extends Message {
+  sender: Profile;
+}
+
 // Form types
 export interface SignUpData {
   email: string;
