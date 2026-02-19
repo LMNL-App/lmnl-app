@@ -214,6 +214,11 @@ export default function ConversationsScreen() {
           headerShown: true,
           title: 'Messages',
           headerBackTitle: 'Back',
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => router.back()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+              <Ionicons name="chevron-back" size={24} color={colors.text} />
+            </TouchableOpacity>
+          ),
           headerRight: () => (
             <TouchableOpacity onPress={() => setShowNewMessage(true)}>
               <Ionicons name="create-outline" size={24} color={colors.text} />

@@ -65,10 +65,10 @@ export default function ChatScreen() {
         },
         (payload) => {
           const newMessage = payload.new as Message;
+          // Skip own messages - they're already added optimistically in handleSend
+          if (newMessage.sender_id === user?.id) return;
           setMessages(prev => [...prev, newMessage]);
-          if (newMessage.sender_id !== user?.id) {
-            markMessagesRead(conversationId);
-          }
+          markMessagesRead(conversationId);
         }
       )
       .subscribe();
