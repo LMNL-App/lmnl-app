@@ -438,6 +438,6 @@ For questions or issues, please [create an issue](link-to-issues) or contact the
 
 npx expo run:android --variant release
 
-px expo prebuild -p ios
+npx expo prebuild -p ios
 cd ios
 pod install
