@@ -52,6 +52,26 @@ export default function SettingsLayout() {
         name="change-password"
         options={{ title: 'Change Password' }}
       />
+      <Stack.Screen
+        name="analytics"
+        options={{ title: 'Analytics' }}
+      />
+      <Stack.Screen
+        name="data-export"
+        options={{ title: 'Export Data' }}
+      />
+      <Stack.Screen
+        name="drafts"
+        options={{ title: 'Drafts' }}
+      />
+      <Stack.Screen
+        name="language"
+        options={{ title: 'Language' }}
+      />
+      <Stack.Screen
+        name="verification"
+        options={{ title: 'Verification' }}
+      />
     </Stack>
   );
 }

@@ -13,6 +13,7 @@ import {
   Alert,
 } from 'react-native';
 import { Link, useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useThemeStore } from '../../src/stores/themeStore';
 import { Button, Input } from '../../src/components/ui';
@@ -79,6 +80,15 @@ export default function SignUpScreen() {
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
         >
+          {/* Back Button */}
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => router.back()}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Ionicons name="chevron-back" size={28} color={colors.text} />
+          </TouchableOpacity>
+
           {/* Logo */}
           <View style={styles.logoContainer}>
             <Text style={[styles.logoText, { color: colors.text }]}>lmnl</Text>
@@ -176,6 +186,12 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'center',
     padding: Spacing.xl,
+  },
+  backButton: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    padding: Spacing.xs,
   },
   logoContainer: {
     alignItems: 'center',
