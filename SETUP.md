@@ -347,7 +347,6 @@ cd ios && pod install && cd ..
 - Check [Expo Documentation](https://docs.expo.dev/)
 - Check [Supabase Documentation](https://supabase.com/docs)
 - Review the `plan.md` file for architectural decisions
-- Review the `claude.md` file for AI assistant context
 
 ---
 
